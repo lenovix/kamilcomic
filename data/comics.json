@@ -1,0 +1,14 @@
+[
+  {
+    "slug": "my-hero-academia",
+    "title": "My Hero Academia",
+    "author": "Kohei Horikoshi",
+    "genre": ["Action", "School"],
+    "status": "Ongoing",
+    "cover": "/comics/my-hero-academia/cover.jpg",
+    "chapters": [
+      { "number": "001", "title": "Izuku Midoriya: Origin" },
+      { "number": "002", "title": "What It Takes to Be a Hero" }
+    ]
+  }
+]
