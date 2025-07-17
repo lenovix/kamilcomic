@@ -1,1 +1,1 @@
-di halaman [slug].tsx yang bagian chapter, ada kode <span className="text-xs text-gray-400">{ch.language}</span>. kode ini adalah kode language, namun saya ingin mengubah dari kata ke icon saja. misalkan english itu bendera inggris, contoh lain misalkan japanese itu bendera jepang
+next plan: upload page
