@@ -30,7 +30,7 @@ export default function BookmarksPage() {
               >
                 <img
                   src={comic.cover}
-                  alt={comic.title}
+                  alt={Array.isArray(comic.title) ? comic.title.join(", ") : comic.title}
                   className="w-full h-48 object-cover rounded mb-2 border border-yellow-200"
                 />
                 <div className="font-bold text-lg text-yellow-700 group-hover:underline mb-1">{comic.title}</div>

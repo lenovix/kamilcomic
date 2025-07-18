@@ -82,8 +82,12 @@ export default function ComicDetail() {
         <div className="flex flex-col md:flex-row gap-8 mb-10 bg-white rounded-xl shadow-lg p-6">
           <div className="flex-shrink-0 flex justify-center items-start">
             <img
-              src={comic.cover || "/placeholder-cover.jpg"}
-              alt={comic.title}
+              src={
+                comic.cover
+                  ? `${comic.cover}?v=${typeof window !== 'undefined' ? Date.now() : ''}`
+                  : "/placeholder-cover.jpg"
+              }
+              alt={Array.isArray(comic.title) ? comic.title.join(", ") : comic.title}
               className="w-56 h-auto rounded-lg shadow-lg border-2 border-gray-200 object-cover"
             />
           </div>
@@ -93,6 +97,13 @@ export default function ComicDetail() {
               <p className="text-xs text-gray-400 mb-4">ID: #{comic.slug}</p>
               {/* Bookmark, Rating, Delete */}
               <div className="flex items-center gap-4 mb-4">
+                <button
+                  onClick={() => window.location.href = `/edit-comic?slug=${comic.slug}`}
+                  className="px-3 py-1 rounded bg-blue-500 text-white hover:bg-blue-700 transition ml-2"
+                  title="Edit data komik"
+                >
+                  ✏️ Edit Comic
+                </button>
                 <button
                   onClick={handleBookmark}
                   className={`px-3 py-1 rounded text-white ${bookmarked ? 'bg-yellow-500' : 'bg-gray-400'} transition`}

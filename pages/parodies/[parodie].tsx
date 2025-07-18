@@ -22,9 +22,11 @@ export default function ParodieDetailPage() {
   });
 
   // Tambahan: filter berdasarkan input pencarian
-  const filteredComics = comicsByParodie.filter((comic) =>
-    comic.title.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredComics = comicsByParodie.filter((comic) => {
+    const title =
+      Array.isArray(comic.title) ? comic.title.join(" ") : comic.title;
+    return title.toLowerCase().includes(search.toLowerCase());
+  });
 
   return (
     <>
@@ -55,7 +57,7 @@ export default function ParodieDetailPage() {
               >
                 <img
                   src={comic.cover || "/placeholder-cover.jpg"}
-                  alt={comic.title}
+                  alt={Array.isArray(comic.title) ? comic.title.join(", ") : comic.title}
                   className="w-full h-52 object-cover"
                 />
                 <div className="p-3 bg-white">

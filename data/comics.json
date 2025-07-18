@@ -1,19 +1,16 @@
 [
   {
     "slug": 1,
-    "title": "My Hero Academia",
-    "parodies": "Genshin Impact",
-    "characters": "Shenhe",
-    "artists": "Makoto",
-    "groups": "DJI Studio",
-    "categories": "Comic",
-    "uploaded": "07/17/2025",
-    "author": "Kohei Horikoshi",
-    "tags": [
-      "Action",
-      "School"
-    ],
-    "status": "Ongoing",
+    "title": ["My Hero Academia"],
+    "parodies": ["Genshin Impact"],
+    "characters": ["Shenhe"],
+    "artists": ["Makoto"],
+    "groups": ["DJI Studio"],
+    "categories": ["Comic"],
+    "uploaded": ["07/17/2025"],
+    "author": ["Kohei Horikoshi"],
+    "tags": ["Action", "School"],
+    "status": ["Complete"],
     "cover": "/comics/1/cover.jpg",
     "chapters": [
       {
@@ -33,30 +30,14 @@
   {
     "slug": 11,
     "title": "testing1",
-    "parodies": [
-      "world"
-    ],
-    "characters": [
-      "people"
-    ],
-    "artists": [
-      "ichsanul kamil sudarmi"
-    ],
-    "groups": [
-      "kamil group"
-    ],
-    "categories": [
-      "life",
-      "real time",
-      "management"
-    ],
-    "uploaded": "2025-07-18",
-    "author": "ichsanul kamil sudarmi",
-    "tags": [
-      "action",
-      "adventure",
-      "shooter"
-    ],
+    "parodies": ["world"],
+    "characters": ["people", "shenhe", "cantarella"],
+    "artists": ["ichsanul kamil sudarmi"],
+    "groups": ["kamil group", "sudarmi group"],
+    "categories": ["life", "real time", "management"],
+    "uploaded": ["2025-07-18"],
+    "author": ["ichsanul kamil sudarmi"],
+    "tags": ["action", "adventure", "shooter"],
     "status": "Ongoing",
     "cover": "/comics/11/cover.jpg",
     "chapters": [

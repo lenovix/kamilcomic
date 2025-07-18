@@ -24,9 +24,15 @@ export default function CategorieDetailPage() {
   );
 
   // Tambahan: filter berdasarkan input pencarian
-  const filteredComics = comicsByCategorie.filter((comic) =>
-    comic.title.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredComics = comicsByCategorie.filter((comic) => {
+    const title =
+      typeof comic.title === "string"
+        ? comic.title
+        : Array.isArray(comic.title)
+        ? comic.title.join(" ")
+        : "";
+    return title.toLowerCase().includes(search.toLowerCase());
+  });
 
   return (
     <>
@@ -57,7 +63,13 @@ export default function CategorieDetailPage() {
               >
                 <img
                   src={comic.cover || "/placeholder-cover.jpg"}
-                  alt={comic.title}
+                  alt={
+                    typeof comic.title === "string"
+                      ? comic.title
+                      : Array.isArray(comic.title)
+                      ? comic.title.join(" ")
+                      : ""
+                  }
                   className="w-full h-52 object-cover"
                 />
                 <div className="p-3 bg-white">

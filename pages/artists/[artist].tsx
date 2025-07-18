@@ -24,9 +24,16 @@ export default function ArtistDetailPage() {
   );
 
   // Tambahan: filter berdasarkan input pencarian
-  const filteredComics = comicsByArtist.filter((comic) =>
-    comic.title.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredComics = comicsByArtist.filter((comic) => {
+    if (typeof comic.title === "string") {
+      return comic.title.toLowerCase().includes(search.toLowerCase());
+    } else if (Array.isArray(comic.title)) {
+      return comic.title.some((t) =>
+        t.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+    return false;
+  });
 
   return (
     <>
@@ -57,7 +64,7 @@ export default function ArtistDetailPage() {
               >
                 <img
                   src={comic.cover || "/placeholder-cover.jpg"}
-                  alt={comic.title}
+                  alt={Array.isArray(comic.title) ? comic.title.join(", ") : comic.title}
                   className="w-full h-52 object-cover"
                 />
                 <div className="p-3 bg-white">

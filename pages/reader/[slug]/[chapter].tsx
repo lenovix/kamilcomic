@@ -4,6 +4,8 @@ import Link from "next/link";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 
+import { useEffect, useState } from "react";
+import fs from "fs";
 dayjs.extend(relativeTime);
 
 export default function ReaderPage() {
@@ -14,6 +16,21 @@ export default function ReaderPage() {
   if (!comic || !chapter) return <p className="p-6">Loading...</p>;
 
   const imagePath = `/comics/${comic.slug}/chapters/${chapter.number}`;
+
+  // State untuk daftar file gambar
+  const [pages, setPages] = useState<string[]>([]);
+
+  useEffect(() => {
+    // Hanya jalan di client, fetch daftar file dari API custom
+    async function fetchPages() {
+      const res = await fetch(`/api/list-pages?slug=${comic?.slug}&chapter=${chapter?.number}`);
+      if (res.ok) {
+        const data = await res.json();
+        setPages(data.pages || []);
+      }
+    }
+    fetchPages();
+  }, [comic.slug, chapter.number]);
 
   // Cari index chapter saat ini
   const chapterIndex = comic.chapters.findIndex((ch) => ch.number === chapter.number);
@@ -43,15 +60,18 @@ export default function ReaderPage() {
 
       {/* Image pages */}
       <div className="flex flex-col items-center gap-4">
-        {[...Array(30)].map((_, i) => (
-          <img
-            key={i}
-            src={`${imagePath}/page${i + 1}.jpg`}
-            alt={`Page ${i + 1}`}
-            className="w-full max-w-2xl rounded shadow"
-            onError={(e) => (e.currentTarget.style.display = "none")}
-          />
-        ))}
+        {pages.length > 0 ? (
+          pages.map((filename, i) => (
+            <img
+              key={filename}
+              src={`${imagePath}/${filename}`}
+              alt={`Page ${i + 1}`}
+              className="w-full max-w-2xl rounded shadow"
+            />
+          ))
+        ) : (
+          <p className="text-gray-400">Tidak ada halaman ditemukan.</p>
+        )}
       </div>
 
       {/* Navigasi chapter */}

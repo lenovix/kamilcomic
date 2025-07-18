@@ -17,7 +17,9 @@ export default function TagDetailPage() {
 
   // Tambahan: filter berdasarkan input pencarian
   const filteredComics = comicsWithTag.filter((comic) =>
-    comic.title.toLowerCase().includes(search.toLowerCase())
+    (typeof comic.title === "string" ? comic.title : String(comic.title))
+      .toLowerCase()
+      .includes(search.toLowerCase())
   );
 
   return (
@@ -49,7 +51,7 @@ export default function TagDetailPage() {
               >
                 <img
                   src={comic.cover || "/placeholder-cover.jpg"}
-                  alt={comic.title}
+                  alt={Array.isArray(comic.title) ? comic.title.join(", ") : comic.title}
                   className="w-full h-52 object-cover"
                 />
                 <div className="p-3 bg-white">

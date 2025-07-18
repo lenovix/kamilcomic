@@ -12,8 +12,9 @@ export default function AuthorDetailPage() {
 
   // Filter komik berdasarkan author
   const comicsByAuthor = comics.filter((comic) => {
-    let authorField = comic.author;
-    if (Array.isArray(authorField)) authorField = authorField[0];
+    const authorField = Array.isArray(comic.author)
+      ? comic.author[0]
+      : comic.author;
     if (typeof authorField !== 'string') return false;
     return authorField.toLowerCase() === author?.toLowerCase();
   });
@@ -53,7 +54,7 @@ export default function AuthorDetailPage() {
               >
                 <img
                   src={comic.cover || "/placeholder-cover.jpg"}
-                  alt={comic.title}
+                  alt={typeof comic.title === "string" ? comic.title : Array.isArray(comic.title) ? comic.title[0] : ""}
                   className="w-full h-52 object-cover"
                 />
                 <div className="p-3 bg-white">
