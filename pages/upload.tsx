@@ -1,7 +1,4 @@
-next plan: upload page
-
-
-saya ingin untuk mengupload chapter, bisa memilih multi gambar, tolong ditambahkan fitur itu, berikut kodenya:
+// (bagian import tetap sama)
 import { useState } from "react";
 import { useRouter } from "next/router";
 import Header from "@/components/Header";
@@ -34,7 +31,7 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
   const [coverFile, setCoverFile] = useState<File | null>(null);
 
   const [chapters, setChapters] = useState([
-    { number: "001", title: "", language: "English", file: null as File | null },
+    { number: "", title: "", language: "English", files: [] as File[] },
   ]);
 
   const handleComicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,9 +52,9 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
     setChapters(updated);
   };
 
-  const handleChapterFile = (index: number, file: File | null) => {
+  const handleChapterFile = (index: number, files: FileList | null) => {
     const updated = [...chapters];
-    updated[index].file = file;
+    updated[index].files = files ? Array.from(files) : [];
     setChapters(updated);
   };
 
@@ -65,13 +62,15 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
 
   const addChapter = () => {
     const nextNumber = formatChapterNumber(chapters.length + 1);
-    setChapters([...chapters, { number: nextNumber, title: "", language: "English", file: null }]);
+    setChapters([
+      ...chapters,
+      { number: nextNumber, title: "", language: "English", files: null },
+    ]);
   };
 
   const removeChapter = (index: number) => {
     const updated = [...chapters];
     updated.splice(index, 1);
-    // Re-numbering
     const renumbered = updated.map((ch, i) => ({
       ...ch,
       number: formatChapterNumber(i + 1),
@@ -79,16 +78,62 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
     setChapters(renumbered);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    console.log("Comic Data:", comicData);
-    console.log("Cover File:", coverFile);
-    console.log("Chapters:", chapters);
-
-    alert("Upload berhasil (simulasi)");
-    router.push("/");
+  
+    const formData = new FormData();
+  
+    // Komik data
+    Object.entries(comicData).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+  
+    // Cover file
+    if (coverFile) {
+      formData.append('cover', coverFile);
+    }
+  
+    // Metadata chapter
+    formData.append(
+      'chapters',
+      JSON.stringify(
+        chapters.map((ch) => ({
+          number: ch.number,
+          title: ch.title,
+          language: ch.language,
+        }))
+      )
+    );
+  
+    // File chapter
+    chapters.forEach((ch) => {
+      ch.files?.forEach((file) => {
+        formData.append(`chapter-${ch.number}`, file);
+      });
+    });
+  
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+  
+      if (res.ok) {
+        alert('Upload berhasil!');
+        router.push('/');
+      } else {
+        const err = await res.json();
+        console.error('Upload error:', err);
+        alert(`Upload gagal: ${err.message}`);
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+      alert('Terjadi kesalahan jaringan');
+    }
   };
+  
+  
+  
 
   return (
     <>
@@ -107,7 +152,6 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
               <input name="characters" placeholder="Characters (pisah dengan koma)" onChange={handleComicChange} className="border p-2 rounded" />
               <input name="categories" placeholder="Categories (pisah dengan koma)" onChange={handleComicChange} className="border p-2 rounded" />
               <input name="tags" placeholder="Tags (pisah dengan koma)" onChange={handleComicChange} className="col-span-2 border p-2 rounded" />
-
               <div className="col-span-2">
                 <label className="block text-sm font-medium mb-1">Cover Image</label>
                 <input
@@ -156,11 +200,17 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
                   />
                 </div>
                 <input
-                  type="file"
-                  accept=".zip,.rar,image/*"
-                  onChange={(e) => handleChapterFile(index, e.target.files?.[0] || null)}
-                  className="w-full border p-2 rounded"
-                />
+  type="file"
+  multiple
+  accept=".zip,.rar,image/*"
+  onChange={(e) => handleChapterFile(index, e.target.files)}
+  className="w-full border p-2 rounded"
+/>
+                {ch.files && (
+                  <p className="text-sm text-gray-500">
+                    {ch.files.length} file dipilih
+                  </p>
+                )}
                 {index > 0 && (
                   <button
                     type="button"
