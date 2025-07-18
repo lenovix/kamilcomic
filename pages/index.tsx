@@ -1,21 +1,26 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import comics from "../data/comics.json";
 import Link from "next/link";
 import Header from "../components/Header";
+import { getAverageRating } from "../utils/BookmarkRatingUtils";
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => { setIsClient(true); }, []);
 
   // Komik terbaru (berdasarkan tanggal uploaded, urut descending)
   const newComics = useMemo(() => {
     return [...comics]
       .sort((a, b) => {
-        const dateA = new Date(a.uploaded || 0).getTime();
-        const dateB = new Date(b.uploaded || 0).getTime();
+        const uploadedA = Array.isArray(a.uploaded) ? a.uploaded[0] : a.uploaded;
+        const uploadedB = Array.isArray(b.uploaded) ? b.uploaded[0] : b.uploaded;
+        const dateA = new Date(uploadedA || 0).getTime();
+        const dateB = new Date(uploadedB || 0).getTime();
         return dateB - dateA;
       })
       .slice(0, 6);
-  }, []);
+  }, [comics]);
 
   // Semua chapter terbaru dari semua komik
   const updateChapters = useMemo(() => {
@@ -27,6 +32,7 @@ export default function Home() {
           comicTitle: comic.title,
           comicSlug: comic.slug,
           comicCover: comic.cover,
+          uploaded: Array.isArray(comic.uploaded) ? comic.uploaded[0] : comic.uploaded,
         });
       });
     });
@@ -38,14 +44,22 @@ export default function Home() {
         return dateB - dateA;
       })
       .slice(0, 8);
-  }, []);
+  }, [comics]);
 
   // Filter comics berdasarkan judul (case-insensitive)
   const filteredComics = useMemo(() => {
-    return comics.filter((comic) =>
-      comic.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [searchTerm]);
+    const filtered = comics.filter((comic) => {
+      const title = typeof comic.title === 'string' ? comic.title : Array.isArray(comic.title) ? comic.title[0] : '';
+      return title.toLowerCase().includes(searchTerm.toLowerCase());
+    });
+    return filtered.sort((a, b) => {
+      const uploadedA = Array.isArray(a.uploaded) ? a.uploaded[0] : a.uploaded;
+      const uploadedB = Array.isArray(b.uploaded) ? b.uploaded[0] : b.uploaded;
+      const dateA = new Date(uploadedA || 0).getTime();
+      const dateB = new Date(uploadedB || 0).getTime();
+      return dateB - dateA;
+    });
+  }, [searchTerm, comics]);
 
   return (
     <>
@@ -67,12 +81,20 @@ export default function Home() {
               >
                 <img
                   src={comic.cover || "/placeholder-cover.jpg"}
-                  alt={comic.title}
+                  alt={typeof comic.title === 'string' ? comic.title : Array.isArray(comic.title) ? comic.title[0] : ''}
                   className="w-full h-36 object-cover group-hover:scale-105 transition-transform duration-200"
                 />
                 <div className="p-2 flex-1 flex flex-col justify-between">
-                  <h3 className="text-xs font-semibold truncate group-hover:text-blue-600 mb-1 text-black">{comic.title}</h3>
+                  <h3 className="text-xs font-semibold truncate group-hover:text-blue-600 mb-1 text-black">{typeof comic.title === 'string' ? comic.title : Array.isArray(comic.title) ? comic.title[0] : ''}</h3>
                   <span className="text-[10px] text-gray-400">{comic.uploaded}</span>
+                  <div className="flex items-center gap-1 text-yellow-600 text-sm mb-1">
+                    {isClient && Array.from({length: 5}).map((_, i) => (
+                      <span key={i}>{getAverageRating(comic.slug) > i ? '★' : '☆'}</span>
+                    ))}
+                    {isClient && (
+                      <span className="ml-1 text-xs text-gray-500">({getAverageRating(comic.slug)}/5)</span>
+                    )}
+                  </div>
                 </div>
               </Link>
             ))}
@@ -126,24 +148,24 @@ export default function Home() {
               >
                 <img
                   src={comic.cover || "/placeholder-cover.jpg"}
-                  alt={comic.title}
+                  alt={typeof comic.title === 'string' ? comic.title : Array.isArray(comic.title) ? comic.title[0] : ''}
                   className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-200"
                 />
                 <div className="p-3 flex-1 flex flex-col justify-between">
                   <h2 className="text-md font-semibold group-hover:text-blue-600 transition truncate mb-1 text-black">
-                    {comic.title}
+                    {typeof comic.title === 'string' ? comic.title : Array.isArray(comic.title) ? comic.title[0] : ''}
                   </h2>
                   <p className="text-xs text-gray-500 mb-1 truncate">
-                    {comic.tags?.join(", ")}
+                    {Array.isArray(comic.tags) ? comic.tags.join(", ") : (typeof comic.tags === 'string' ? comic.tags : '')}
                   </p>
                   <span
                     className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full ${
-                      comic.status === "Completed"
+                      (typeof comic.status === 'string' ? comic.status : Array.isArray(comic.status) ? comic.status[0] : '') === "Completed"
                         ? "bg-green-100 text-green-800"
                         : "bg-yellow-100 text-yellow-800"
                     }`}
                   >
-                    {comic.status || "Unknown"}
+                    {typeof comic.status === 'string' ? comic.status : Array.isArray(comic.status) ? comic.status[0] : 'Unknown'}
                   </span>
                 </div>
               </Link>

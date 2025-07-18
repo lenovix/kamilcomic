@@ -31,7 +31,7 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
   const [coverFile, setCoverFile] = useState<File | null>(null);
 
   const [chapters, setChapters] = useState([
-    { number: "", title: "", language: "English", files: [] as File[] },
+    { number: "001", title: "", language: "English", files: [] as File[] },
   ]);
 
   const handleComicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,9 +46,17 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
     }
   };
 
-  const handleChapterChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChapterChange = (
+    index: number,
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const updated = [...chapters];
-    updated[index][e.target.name as keyof typeof updated[number]] = e.target.value;
+    const key = e.target.name as keyof (typeof updated)[number];
+    if (key === "files") {
+      // Do not assign string to files
+      return;
+    }
+    updated[index][key] = e.target.value as never;
     setChapters(updated);
   };
 
@@ -64,7 +72,7 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
     const nextNumber = formatChapterNumber(chapters.length + 1);
     setChapters([
       ...chapters,
-      { number: nextNumber, title: "", language: "English", files: null },
+      { number: nextNumber, title: "", language: "English", files: [] },
     ]);
   };
 
@@ -80,60 +88,71 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
+    // Validasi minimal judul dan chapter
+    if (!comicData.title) {
+      alert("Judul komik wajib diisi");
+      return;
+    }
+    if (!chapters.length || !chapters[0].title) {
+      alert("Minimal 1 chapter dengan judul wajib diisi");
+      return;
+    }
+    // Validasi: semua chapter harus ada number, title, dan files (minimal 1 file)
+    for (const ch of chapters) {
+      if (!ch.number || !ch.title || !ch.language) {
+        alert("Semua chapter wajib diisi nomor, judul, dan bahasa!");
+        return;
+      }
+      if (!ch.files || ch.files.length === 0) {
+        alert(`Chapter ${ch.number} belum ada file halaman!`);
+        return;
+      }
+    }
+
     const formData = new FormData();
-  
-    // Komik data
     Object.entries(comicData).forEach(([key, value]) => {
       formData.append(key, value);
     });
-  
-    // Cover file
     if (coverFile) {
-      formData.append('cover', coverFile);
+      formData.append("cover", coverFile);
     }
-  
-    // Metadata chapter
     formData.append(
-      'chapters',
+      "chapters",
       JSON.stringify(
         chapters.map((ch) => ({
           number: ch.number,
           title: ch.title,
           language: ch.language,
+          uploadChapter: comicData.uploaded,
         }))
       )
     );
-  
-    // File chapter
     chapters.forEach((ch) => {
-      ch.files?.forEach((file) => {
-        formData.append(`chapter-${ch.number}`, file);
-      });
+      if (ch.files && ch.files.length > 0) {
+        ch.files.forEach((file) => {
+          formData.append(`chapter-${ch.number}`, file);
+        });
+      }
     });
-  
     try {
-      const res = await fetch('/api/upload', {
-        method: 'POST',
+      const res = await fetch("/api/upload", {
+        method: "POST",
         body: formData,
       });
-  
       if (res.ok) {
-        alert('Upload berhasil!');
-        router.push('/');
+        alert("Upload berhasil!");
+        router.push("/");
       } else {
         const err = await res.json();
-        console.error('Upload error:', err);
+        console.error("Upload error:", err);
         alert(`Upload gagal: ${err.message}`);
       }
     } catch (error) {
-      console.error('Network error:', error);
-      alert('Terjadi kesalahan jaringan');
+      console.error("Network error:", error);
+      alert("Terjadi kesalahan jaringan");
     }
   };
-  
-  
-  
 
   return (
     <>
@@ -143,17 +162,67 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
         <form onSubmit={handleSubmit} className="space-y-6">
           <section className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <input name="slug" value={comicData.slug} onChange={handleComicChange} required className="border p-2 rounded" />
-              <input name="title" placeholder="Title" onChange={handleComicChange} required className="border p-2 rounded" />
-              <input name="author" placeholder="Author (pisah dengan koma)" onChange={handleComicChange} className="border p-2 rounded" />
-              <input name="artist" placeholder="Artist (pisah dengan koma)" onChange={handleComicChange} className="border p-2 rounded" />
-              <input name="groups" placeholder="Groups (pisah dengan koma)" onChange={handleComicChange} className="border p-2 rounded" />
-              <input name="parodies" placeholder="Parodies (pisah dengan koma)" onChange={handleComicChange} className="border p-2 rounded" />
-              <input name="characters" placeholder="Characters (pisah dengan koma)" onChange={handleComicChange} className="border p-2 rounded" />
-              <input name="categories" placeholder="Categories (pisah dengan koma)" onChange={handleComicChange} className="border p-2 rounded" />
-              <input name="tags" placeholder="Tags (pisah dengan koma)" onChange={handleComicChange} className="col-span-2 border p-2 rounded" />
+              <input
+                name="slug"
+                value={comicData.slug}
+                onChange={handleComicChange}
+                required
+                className="border p-2 rounded"
+                readOnly
+              />
+              <input
+                name="title"
+                placeholder="Title"
+                onChange={handleComicChange}
+                required
+                className="border p-2 rounded"
+              />
+              <input
+                name="author"
+                placeholder="Author (pisah dengan koma)"
+                onChange={handleComicChange}
+                className="border p-2 rounded"
+              />
+              <input
+                name="artist"
+                placeholder="Artist (pisah dengan koma)"
+                onChange={handleComicChange}
+                className="border p-2 rounded"
+              />
+              <input
+                name="groups"
+                placeholder="Groups (pisah dengan koma)"
+                onChange={handleComicChange}
+                className="border p-2 rounded"
+              />
+              <input
+                name="parodies"
+                placeholder="Parodies (pisah dengan koma)"
+                onChange={handleComicChange}
+                className="border p-2 rounded"
+              />
+              <input
+                name="characters"
+                placeholder="Characters (pisah dengan koma)"
+                onChange={handleComicChange}
+                className="border p-2 rounded"
+              />
+              <input
+                name="categories"
+                placeholder="Categories (pisah dengan koma)"
+                onChange={handleComicChange}
+                className="border p-2 rounded"
+              />
+              <input
+                name="tags"
+                placeholder="Tags (pisah dengan koma)"
+                onChange={handleComicChange}
+                className="col-span-2 border p-2 rounded"
+              />
               <div className="col-span-2">
-                <label className="block text-sm font-medium mb-1">Cover Image</label>
+                <label className="block text-sm font-medium mb-1">
+                  Cover Image
+                </label>
                 <input
                   type="file"
                   accept="image/*"
@@ -174,7 +243,10 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
           <section>
             <h2 className="text-lg font-semibold mb-2">📄 Chapters</h2>
             {chapters.map((ch, index) => (
-              <div key={index} className="space-y-2 mb-4 border p-3 rounded relative">
+              <div
+                key={index}
+                className="space-y-2 mb-4 border p-3 rounded relative"
+              >
                 <div className="grid grid-cols-3 gap-4">
                   <input
                     name="number"
@@ -182,7 +254,6 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
                     value={ch.number}
                     onChange={(e) => handleChapterChange(index, e)}
                     className="border p-2 rounded"
-                    readOnly
                   />
                   <input
                     name="title"
@@ -200,12 +271,12 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
                   />
                 </div>
                 <input
-  type="file"
-  multiple
-  accept=".zip,.rar,image/*"
-  onChange={(e) => handleChapterFile(index, e.target.files)}
-  className="w-full border p-2 rounded"
-/>
+                  type="file"
+                  multiple
+                  accept=".zip,.rar,image/*"
+                  onChange={(e) => handleChapterFile(index, e.target.files)}
+                  className="w-full border p-2 rounded"
+                />
                 {ch.files && (
                   <p className="text-sm text-gray-500">
                     {ch.files.length} file dipilih
@@ -222,7 +293,11 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
                 )}
               </div>
             ))}
-            <button type="button" onClick={addChapter} className="text-sm text-blue-600 hover:underline">
+            <button
+              type="button"
+              onClick={addChapter}
+              className="text-sm text-blue-600 hover:underline"
+            >
               + Tambah Chapter
             </button>
           </section>
@@ -247,7 +322,8 @@ export const getServerSideProps: GetServerSideProps = async () => {
     const data = fs.readFileSync(filePath, "utf-8");
     const comics = JSON.parse(data);
 
-    const lastSlug = comics.length > 0 ? parseInt(comics[comics.length - 1].slug) : 0;
+    const lastSlug =
+      comics.length > 0 ? parseInt(comics[comics.length - 1].slug) : 0;
     const nextSlug = lastSlug + 1;
 
     return { props: { defaultSlug: nextSlug } };

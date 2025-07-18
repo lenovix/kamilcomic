@@ -11,10 +11,15 @@ export default function ParodieDetailPage() {
   const [search, setSearch] = useState("");
 
   // Filter komik berdasarkan Parodie
-  const comicsByParodie = comics.filter(
-    (comic) =>
-      comic.parodies?.toLowerCase() === Parodies?.toLowerCase()
-  );
+  const comicsByParodie = comics.filter((comic) => {
+    if (!comic.parodies || !Parodies) return false;
+    if (Array.isArray(comic.parodies)) {
+      return comic.parodies.some(
+        (p: string) => p.toLowerCase() === Parodies.toLowerCase()
+      );
+    }
+    return comic.parodies.toLowerCase() === Parodies.toLowerCase();
+  });
 
   // Tambahan: filter berdasarkan input pencarian
   const filteredComics = comicsByParodie.filter((comic) =>

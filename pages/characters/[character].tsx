@@ -12,8 +12,13 @@ export default function characterDetailPage() {
 
   // Filter komik berdasarkan character
   const comicsBycharacter = comics.filter(
-    (comic) =>
-      comic.characters?.toLowerCase() === characters?.toLowerCase()
+    (comic) => {
+      if (!comic.characters || !characters) return false;
+      if (Array.isArray(comic.characters)) {
+        return comic.characters.some((char: string) => char.toLowerCase() === characters.toLowerCase());
+      }
+      return comic.characters.toLowerCase() === characters.toLowerCase();
+    }
   );
 
   // Tambahan: filter berdasarkan input pencarian

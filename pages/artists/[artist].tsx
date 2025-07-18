@@ -12,8 +12,15 @@ export default function ArtistDetailPage() {
 
   // Filter komik berdasarkan artist
   const comicsByArtist = comics.filter(
-    (comic) =>
-      comic.artists?.toLowerCase() === artists?.toLowerCase()
+    (comic) => {
+      if (!comic.artists) return false;
+      if (Array.isArray(comic.artists)) {
+        return comic.artists.some(
+          (artist: string) => artist.toLowerCase() === artists?.toLowerCase()
+        );
+      }
+      return comic.artists.toLowerCase() === artists?.toLowerCase();
+    }
   );
 
   // Tambahan: filter berdasarkan input pencarian

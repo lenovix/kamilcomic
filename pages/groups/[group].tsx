@@ -12,8 +12,15 @@ export default function groupDetailPage() {
 
   // Filter komik berdasarkan group
   const comicsBygroup = comics.filter(
-    (comic) =>
-      comic.groups?.toLowerCase() === groups?.toLowerCase()
+    (comic) => {
+      if (!comic.groups) return false;
+      if (Array.isArray(comic.groups)) {
+        return comic.groups.some(
+          (g) => g.toLowerCase() === groups?.toLowerCase()
+        );
+      }
+      return comic.groups.toLowerCase() === groups?.toLowerCase();
+    }
   );
 
   // Tambahan: filter berdasarkan input pencarian

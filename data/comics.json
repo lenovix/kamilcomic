@@ -2,127 +2,76 @@
   {
     "slug": 1,
     "title": "My Hero Academia",
-    "parodies":"Genshin Impact",
-    "characters":"Shenhe",
-    "artists":"Makoto",
-    "groups":"DJI Studio",
-    "categories":"Comic",
-    "uploaded":"07/17/2025",
+    "parodies": "Genshin Impact",
+    "characters": "Shenhe",
+    "artists": "Makoto",
+    "groups": "DJI Studio",
+    "categories": "Comic",
+    "uploaded": "07/17/2025",
     "author": "Kohei Horikoshi",
-    "tags": ["Action", "School"],
+    "tags": [
+      "Action",
+      "School"
+    ],
     "status": "Ongoing",
     "cover": "/comics/1/cover.jpg",
     "chapters": [
-      { "number": "001", "title": "Izuku Midoriya: Origin", "language":"English", "uploadChapter":"07/17/2025" },
-      { "number": "002", "title": "What It Takes to Be a Hero", "language":"Japanese", "uploadChapter":"07/17/2025" }
+      {
+        "number": "001",
+        "title": "Izuku Midoriya: Origin",
+        "language": "English",
+        "uploadChapter": "07/17/2025"
+      },
+      {
+        "number": "002",
+        "title": "What It Takes to Be a Hero",
+        "language": "Japanese",
+        "uploadChapter": "07/17/2025"
+      }
     ]
   },
   {
-    "slug": 2,
-    "title": "Attack on Titan",
-    "parodies":"Shingeki no Kyojin",
-    "characters":"Eren Yeager",
-    "artists":"Hajime Isayama",
-    "groups":"Kodansha",
-    "categories":"Manga",
-    "uploaded":"07/18/2025",
-    "author": "Hajime Isayama",
-    "tags": ["Action", "Fantasy"],
-    "status": "Completed",
-    "cover": "/comics/2/cover.jpg",
-    "chapters": [
-      { "number": "001", "title": "To You, in 2000 Years: The Fall of Shiganshina, Part 1", "language":"English", "uploadChapter":"07/18/2025" },
-      { "number": "002", "title": "That Day: The Fall of Shiganshina, Part 2", "language":"Japanese", "uploadChapter":"07/18/2025" }
-    ]
-  },
-  {
-    "slug": 3,
-    "title": "One Piece",
-    "parodies":"Pirate King",
-    "characters":"Monkey D. Luffy",
-    "artists":"Eiichiro Oda",
-    "groups":"Shueisha",
-    "categories":"Anime",
-    "uploaded":"07/19/2025",
-    "author": "Eiichiro Oda",
-    "tags": ["Adventure", "Fantasy"],
+    "slug": 11,
+    "title": "testing1",
+    "parodies": [
+      "world"
+    ],
+    "characters": [
+      "people"
+    ],
+    "artists": [
+      "ichsanul kamil sudarmi"
+    ],
+    "groups": [
+      "kamil group"
+    ],
+    "categories": [
+      "life",
+      "real time",
+      "management"
+    ],
+    "uploaded": "2025-07-18",
+    "author": "ichsanul kamil sudarmi",
+    "tags": [
+      "action",
+      "adventure",
+      "shooter"
+    ],
     "status": "Ongoing",
-    "cover": "/comics/3/cover.jpg",
+    "cover": "/comics/11/cover.jpg",
     "chapters": [
-      { "number": "001", "title": "Romance Dawn", "language":"English", "uploadChapter":"07/19/2025" },
-      { "number": "002", "title": "They Call Him Straw Hat Luffy!", "language":"Japanese", "uploadChapter":"07/19/2025" }
-    ]
-  },
-  {
-    "slug": 4,
-    "title": "Demon Slayer: Kimetsu no Yaiba",
-    "parodies":"Kimetsu no Yaiba",
-    "characters":"Tanjiro Kamado",
-    "artists":"Koyoharu Gotouge",
-    "groups":"Shueisha",
-    "categories":"Manga",
-    "uploaded":"07/20/2025",
-    "author": "Koyoharu Gotouge",
-    "tags": ["Action", "Supernatural"],
-    "status": "Completed",
-    "cover": "/comics/4/cover.jpg",
-    "chapters": [
-      { "number": "001", "title": "Cruelty", "language":"English", "uploadChapter":"07/20/2025" },
-      { "number": "002", "title": "Trainer Sakonji Urokodaki", "language":"Japanese", "uploadChapter":"07/20/2025" }
-    ]
-  },
-  {
-    "slug": 5,
-    "title": "Jujutsu Kaisen",
-    "parodies":"Tokyo Metropolitan Jujutsu Technical School",
-    "characters":"Yuji Itadori",
-    "artists":"Gege Akutami",
-    "groups":"Shueisha",
-    "categories":"Anime",
-    "uploaded":"07/21/2025",
-    "author": "Gege Akutami",
-    "tags": ["Action", "Dark Fantasy"],
-    "status": "Ongoing",
-    "cover": "/comics/5/cover.jpg",
-    "chapters": [
-      { "number": "001", "title": "Ryomen Sukuna", "language":"English", "uploadChapter":"07/21/2025" },
-      { "number": "002", "title": "For Myself", "language":"Japanese", "uploadChapter":"07/21/2025" }
-    ]
-  },
-  {
-    "slug": 6,
-    "title": "Tokyo Ghoul",
-    "parodies":"Tokyo Ghoul:re",
-    "characters":"Ken Kaneki",
-    "artists":"Sui Ishida",
-    "groups":"Shueisha",
-    "categories":"Manga",
-    "uploaded":"07/22/2025",
-    "author": "Sui Ishida",
-    "tags": ["Horror", "Dark Fantasy"],
-    "status": "Completed",
-    "cover": "/comics/6/cover.jpg",
-    "chapters": [
-      { "number": "001", "title": "Tragedy", "language":"English", "uploadChapter":"07/22/2025" },
-      { "number": "002", "title": "Incubation", "language":"Japanese", "uploadChapter":"07/22/2025" }
-    ]
-  },
-  {
-    "slug": 7,
-    "title": "Fullmetal Alchemist",
-    "parodies":"Hagane no Renkinjutsushi",
-    "characters":"Edward Elric",
-    "artists":"Hiromu Arakawa",
-    "groups":"Square Enix",
-    "categories":"Anime",
-    "uploaded":"07/23/2025",
-    "author": "Hiromu Arakawa",
-    "tags": ["Adventure", "Fantasy"],
-    "status": "Completed",
-    "cover": "/comics/7/cover.jpg",
-    "chapters": [
-      { "number": "001", "title": "The Two Alchemists", "language":"English", "uploadChapter":"07/23/2025" },
-      { "number": "002", "title": "Body of the Sanctioned", "language":"Japanese", "uploadChapter":"07/23/2025" }
+      {
+        "number": "001",
+        "title": "live",
+        "language": "English",
+        "uploadChapter": "2025-07-18"
+      },
+      {
+        "number": "002",
+        "title": "die",
+        "language": "Japanese",
+        "uploadChapter": "2025-07-18"
+      }
     ]
   }
 ]

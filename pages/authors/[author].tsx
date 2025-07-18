@@ -11,15 +11,18 @@ export default function AuthorDetailPage() {
   const [search, setSearch] = useState("");
 
   // Filter komik berdasarkan author
-  const comicsByAuthor = comics.filter(
-    (comic) =>
-      comic.author?.toLowerCase() === author?.toLowerCase()
-  );
+  const comicsByAuthor = comics.filter((comic) => {
+    let authorField = comic.author;
+    if (Array.isArray(authorField)) authorField = authorField[0];
+    if (typeof authorField !== 'string') return false;
+    return authorField.toLowerCase() === author?.toLowerCase();
+  });
 
   // Tambahan: filter berdasarkan input pencarian
-  const filteredComics = comicsByAuthor.filter((comic) =>
-    comic.title.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredComics = comicsByAuthor.filter((comic) => {
+    const title = typeof comic.title === 'string' ? comic.title : Array.isArray(comic.title) ? comic.title[0] : '';
+    return title.toLowerCase().includes(search.toLowerCase());
+  });
 
   return (
     <>

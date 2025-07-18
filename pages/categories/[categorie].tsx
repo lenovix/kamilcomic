@@ -12,8 +12,15 @@ export default function CategorieDetailPage() {
 
   // Filter komik berdasarkan categorie
   const comicsByCategorie = comics.filter(
-    (comic) =>
-      comic.categories?.toLowerCase() === categories?.toLowerCase()
+    (comic) => {
+      if (!comic.categories) return false;
+      if (Array.isArray(comic.categories)) {
+        return comic.categories.some(
+          (cat: string) => cat.toLowerCase() === categories?.toLowerCase()
+        );
+      }
+      return comic.categories.toLowerCase() === categories?.toLowerCase();
+    }
   );
 
   // Tambahan: filter berdasarkan input pencarian

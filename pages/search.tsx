@@ -11,8 +11,12 @@ export default function SearchPage() {
   const filteredComics = useMemo(() => {
     return comics.filter((comic) => {
       return (
-        comic.title.toLowerCase().includes(query) ||
-        comic.author?.toLowerCase().includes(query) ||
+        (typeof comic.title === "string" && comic.title.toLowerCase().includes(query)) ||
+        (typeof comic.author === "string"
+          ? comic.author.toLowerCase().includes(query)
+          : Array.isArray(comic.author)
+          ? comic.author.some((a) => a.toLowerCase().includes(query))
+          : false) ||
         comic.tags?.some((g) => g.toLowerCase().includes(query))
       );
     });
@@ -38,7 +42,7 @@ export default function SearchPage() {
               >
                 <img
                   src={comic.cover || "/placeholder-cover.jpg"}
-                  alt={comic.title}
+                  alt={Array.isArray(comic.title) ? comic.title.join(", ") : comic.title}
                   className="w-full h-56 object-cover"
                 />
                 <div className="p-3 bg-white">

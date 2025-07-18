@@ -37,6 +37,12 @@ export default function Header() {
           <Link href="/upload" className="text-gray-700 hover:text-blue-600">
             Upload Comic
           </Link>
+          <Link
+            href="/bookmarks"
+            className="text-yellow-600 hover:text-yellow-800 font-semibold"
+          >
+            ★ Bookmarks
+          </Link>
         </div>
       </div>
 
