@@ -49,19 +49,23 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         chaptersStr = '';
       }
       const chapters = chaptersStr ? JSON.parse(chaptersStr) : [];
-      chapters.forEach((ch: any) => {
+      // Build pages array for each chapter
+      const chaptersWithPages = chapters.map((ch: any) => {
         const chapterPath = path.join(slugPath, 'chapters', ch.number);
         fs.mkdirSync(chapterPath, { recursive: true });
 
         const chFiles = files[`chapter-${ch.number}`] as File | File[] | undefined;
-        if (!chFiles) return;
+        if (!chFiles) return { ...ch, pages: [] };
         const fileArray = Array.isArray(chFiles) ? chFiles : [chFiles];
-
+        let pagesArr: { id: string, filename: string }[] = [];
         fileArray.forEach((file, idx) => {
           if (!file || !file.filepath) return;
-          const destPath = path.join(chapterPath, `page${idx + 1}.jpg`);
+          const filename = `page${idx + 1}.jpg`;
+          const destPath = path.join(chapterPath, filename);
           fs.copyFileSync(file.filepath, destPath);
+          pagesArr.push({ id: `${Date.now()}_${idx}`, filename });
         });
+        return { ...ch, pages: pagesArr };
       });
 
       // Simpan ke comics.json
@@ -97,11 +101,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         tags: toArray(fields.tags),
         status: getString(fields.status),
         cover: `/comics/${slug}/cover.jpg`,
-        chapters: chapters.map((ch: any) => ({
+        chapters: chaptersWithPages.map((ch: any) => ({
           number: ch.number,
           title: ch.title,
           language: ch.language,
           uploadChapter: ch.uploadChapter || getString(fields.uploaded),
+          pages: ch.pages || []
         })),
       };
 

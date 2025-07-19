@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import comicsData from "../data/comics.json";
 import Header from "../components/Header";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 export default function EditChapter() {
   const router = useRouter();
@@ -41,10 +41,11 @@ export default function EditChapter() {
     e.preventDefault();
     setLoading(true);
     try {
+      // Gabungkan update form dan urutan gambar
       const res = await fetch("/api/edit-chapter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug, chapter, ...form }),
+        body: JSON.stringify({ slug, chapter, ...form, order: pages }),
       });
       if (res.ok) {
         router.push(`/${slug}`);
@@ -59,12 +60,12 @@ export default function EditChapter() {
   };
 
   // Drag and drop reorder
-  const onDragEnd = async (result: any) => {
+  const onDragEnd = (result: any) => {
     if (!result.destination) return;
     const newPages = Array.from(pages);
     const [removed] = newPages.splice(result.source.index, 1);
     newPages.splice(result.destination.index, 0, removed);
-    setPages(newPages);
+    setPages([...newPages]);
   };
 
   const handleSaveOrder = async () => {
@@ -112,38 +113,44 @@ export default function EditChapter() {
 
         {/* Gambar chapter & drag drop */}
         <div className="mt-8">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-lg font-bold text-blue-700">Urutkan Gambar Chapter</h2>
-            <button
-              onClick={handleSaveOrder}
-              className="bg-green-600 text-white px-4 py-1 rounded text-sm disabled:opacity-60"
-              disabled={savingOrder}
-            >
-              {savingOrder ? "Menyimpan..." : "Simpan Urutan"}
-            </button>
-          </div>
+          <h2 className="text-lg font-bold text-blue-700 mb-2">Urutkan Gambar Chapter</h2>
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId="pages-droppable" direction="horizontal">
-              {(provided) => (
+              {(provided: any) => (
                 <div
                   ref={provided.innerRef}
                   {...provided.droppableProps}
-                  className="flex gap-3 overflow-x-auto py-2"
-                  style={{ minHeight: 120 }}
+                  className="flex gap-3 overflow-x-auto py-2 min-h-[120px]"
+                  style={{ minHeight: 120, minWidth: pages.length === 0 ? 200 : undefined }}
+                  id="dnd-pages-container"
                 >
+                  {pages.length === 0 && (
+                    <span className="text-gray-400 text-sm">Tidak ada gambar di chapter ini.</span>
+                  )}
                   {pages.map((filename, idx) => (
-                    <Draggable key={filename} draggableId={filename} index={idx}>
-                      {(prov, snapshot) => (
+                    <Draggable key={idx + '-' + filename} draggableId={idx + '-' + filename} index={idx}>
+                      {(prov: any, snapshot: any) => (
                         <div
                           ref={prov.innerRef}
                           {...prov.draggableProps}
-                          {...prov.dragHandleProps}
-                          className={`border rounded shadow bg-white p-2 flex flex-col items-center min-w-[100px] ${snapshot.isDragging ? 'ring-2 ring-blue-400' : ''}`}
+                          className={`border rounded shadow bg-white p-2 flex flex-col items-center min-w-[100px] select-none ${snapshot.isDragging ? 'ring-2 ring-blue-400' : ''}`}
+                          style={{ minWidth: 100, ...prov.draggableProps.style }}
                         >
+                          {/* Drag handle icon */}
+                          <span
+                            {...prov.dragHandleProps}
+                            className="cursor-grab text-gray-400 hover:text-blue-500 mb-1"
+                            title="Geser untuk urutkan"
+                            style={{ fontSize: 18 }}
+                          >
+                            ☰
+                          </span>
                           <img
                             src={`/comics/${slug}/chapters/${chapter}/${filename}`}
                             alt={`Page ${idx + 1}`}
                             className="w-20 h-28 object-contain mb-1"
+                            draggable={false}
+                            style={{ pointerEvents: 'none' }}
                           />
                           <span className="text-xs text-gray-600">{filename}</span>
                         </div>

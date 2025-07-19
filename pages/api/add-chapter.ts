@@ -28,19 +28,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
       const idx = comics.findIndex((c: any) => c.slug === Number(slug));
       if (idx === -1) return res.status(404).json({ message: 'Comic not found' });
-      // Tambah data chapter
-      const newChapter = {
-        number: String(chapterNumber),
-        title: String(title),
-        language: String(language),
-        uploadChapter: new Date().toLocaleString('sv-SE', { timeZone: 'Asia/Jakarta' }).replace('T', ' '),
-      };
-      comics[idx].chapters.push(newChapter);
-      fs.writeFileSync(comicsPath, JSON.stringify(comics, null, 2));
-      // Simpan file gambar
+      // Simpan file gambar dan buat array pages
       const chapterDir = path.join(process.cwd(), 'public', 'comics', String(slug), 'chapters', String(chapterNumber));
       fs.mkdirSync(chapterDir, { recursive: true });
       let pageFiles = files.pages;
+      let pagesArr: { id: string, filename: string }[] = [];
       if (pageFiles) {
         if (!Array.isArray(pageFiles)) pageFiles = [pageFiles];
         // Urutkan file sesuai nama file (agar page1, page2, dst)
@@ -51,11 +43,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
         pageFiles.forEach((file: File, idx: number) => {
           if (file && file.filepath) {
-            const dest = path.join(chapterDir, `page${idx + 1}.jpg`);
+            const filename = `page${idx + 1}.jpg`;
+            const dest = path.join(chapterDir, filename);
             fs.copyFileSync(file.filepath, dest);
+            // id unik bisa pakai timestamp + idx
+            pagesArr.push({ id: `${Date.now()}_${idx}`, filename });
           }
         });
       }
+      // Tambah data chapter dengan pages
+      const newChapter = {
+        number: String(chapterNumber),
+        title: String(title),
+        language: String(language),
+        uploadChapter: new Date().toLocaleString('sv-SE', { timeZone: 'Asia/Jakarta' }).replace('T', ' '),
+        pages: pagesArr
+      };
+      comics[idx].chapters.push(newChapter);
+      fs.writeFileSync(comicsPath, JSON.stringify(comics, null, 2));
       return res.status(200).json({ message: 'Chapter added' });
     } catch (error) {
       return res.status(500).json({ message: 'Failed to add chapter', error });

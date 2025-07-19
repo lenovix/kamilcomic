@@ -3,9 +3,7 @@ import comics from "../../../data/comics.json";
 import Link from "next/link";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-
 import { useEffect, useState } from "react";
-import fs from "fs";
 dayjs.extend(relativeTime);
 
 export default function ReaderPage() {
