@@ -1,57 +1,99 @@
 [
   {
     "slug": 1,
-    "title": ["My Hero Academia"],
-    "parodies": ["Genshin Impact"],
-    "characters": ["Shenhe"],
-    "artists": ["Makoto"],
-    "groups": ["DJI Studio"],
-    "categories": ["Comic"],
-    "uploaded": ["07/17/2025"],
-    "author": ["Kohei Horikoshi"],
-    "tags": ["Action", "School"],
-    "status": ["Complete"],
+    "title": "My Hero Academia",
+    "parodies": [
+      "Genshin Impact"
+    ],
+    "characters": [
+      "Shenhe"
+    ],
+    "artists": [
+      "Makoto"
+    ],
+    "groups": [
+      "DJI Studio"
+    ],
+    "categories": [
+      "Comic"
+    ],
+    "uploaded": "2025-07-19 09:10:47",
+    "author": [
+      "Kohei Horikoshi"
+    ],
+    "tags": [
+      "Action",
+      "School"
+    ],
+    "status": "Complete",
     "cover": "/comics/1/cover.jpg",
     "chapters": [
       {
         "number": "001",
         "title": "Izuku Midoriya: Origin",
         "language": "English",
-        "uploadChapter": "07/17/2025"
+        "uploadChapter": "2025-07-19 09:11:04"
       },
       {
         "number": "002",
         "title": "What It Takes to Be a Hero",
         "language": "Japanese",
-        "uploadChapter": "07/17/2025"
+        "uploadChapter": "2025-07-19 09:11:07"
       }
     ]
   },
   {
     "slug": 11,
-    "title": "testing1",
-    "parodies": ["world"],
-    "characters": ["people", "shenhe", "cantarella"],
-    "artists": ["ichsanul kamil sudarmi"],
-    "groups": ["kamil group", "sudarmi group"],
-    "categories": ["life", "real time", "management"],
-    "uploaded": ["2025-07-18"],
-    "author": ["ichsanul kamil sudarmi"],
-    "tags": ["action", "adventure", "shooter"],
+    "title": "testing2",
+    "parodies": [
+      "worlds"
+    ],
+    "characters": [
+      "people",
+      "shenhe",
+      "cantarella",
+      "zani"
+    ],
+    "artists": [
+      "ichsanul kamil sudarmi",
+      "solon"
+    ],
+    "groups": [
+      "kamil group",
+      "sudarmi group",
+      "kuro games"
+    ],
+    "categories": [
+      "life",
+      "real time",
+      "management",
+      "Manga"
+    ],
+    "uploaded": "2025-07-19 09:16:29",
+    "author": [
+      "ichsanul kamil sudarmi",
+      "solon"
+    ],
+    "tags": [
+      "action",
+      "adventure",
+      "shooter",
+      "battle"
+    ],
     "status": "Ongoing",
     "cover": "/comics/11/cover.jpg",
     "chapters": [
       {
         "number": "001",
-        "title": "live",
+        "title": "life",
         "language": "English",
-        "uploadChapter": "2025-07-18"
+        "uploadChapter": "2025-07-19 09:26:04"
       },
       {
         "number": "002",
-        "title": "die",
-        "language": "Japanese",
-        "uploadChapter": "2025-07-18"
+        "title": "AI",
+        "language": "English",
+        "uploadChapter": "2025-07-19 09:26:08"
       }
     ]
   }

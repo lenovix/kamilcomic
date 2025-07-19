@@ -37,16 +37,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // Update data
       comics[idx] = {
         ...comics[idx],
-        title: fields.title,
+        slug: Number(slug),
+        title: typeof fields.title === 'string' ? fields.title : Array.isArray(fields.title) ? fields.title[0] : '',
         parodies: toArray(fields.parodies),
         characters: toArray(fields.characters),
         artists: toArray(fields.artists),
         groups: toArray(fields.groups),
         categories: toArray(fields.categories),
-        uploaded: fields.uploaded,
+        uploaded: new Date().toLocaleString('sv-SE', { timeZone: 'Asia/Jakarta' }).replace('T', ' '),
         author: toArray(fields.author),
         tags: toArray(fields.tags),
-        status: fields.status,
+        status: typeof fields.status === 'string' ? fields.status : Array.isArray(fields.status) ? fields.status[0] : '',
+        cover: comics[idx].cover // cover akan diupdate di bawah jika ada file baru
       };
       // Jika ada file cover baru, replace cover lama
       let coverFile = files.cover as any;

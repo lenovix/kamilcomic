@@ -1,4 +1,5 @@
 
+
 import { useEffect, useState } from "react";
 import {
   isBookmarked,
@@ -7,27 +8,29 @@ import {
   setRating,
   getAverageRating
 } from "../utils/BookmarkRatingUtils";
-
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useRouter } from "next/router";
 import comics from "../data/comics.json";
 import Link from "next/link";
 import Header from "../components/Header";
-
 dayjs.extend(relativeTime);
+
 
 export default function ComicDetail() {
   const { query } = useRouter();
-  const comic = comics.find((c) => c.slug === Number(query.slug));
+  // Pastikan slug bisa string/number
+  const slug = typeof query.slug === "string" ? query.slug : Array.isArray(query.slug) ? query.slug[0] : undefined;
+  const comic = comics.find((c) => String(c.slug) === String(slug));
 
-  // Bookmark & Rating state
+  // Bookmark & Rating state (client only)
   const [bookmarked, setBookmarked] = useState(false);
   const [userRating, setUserRating] = useState(0);
   const [avgRating, setAvgRating] = useState(0);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
-    if (comic) {
+    if (comic && typeof window !== "undefined") {
       setBookmarked(isBookmarked(comic.slug));
       setUserRating(getRating(comic.slug));
       setAvgRating(getAverageRating(comic.slug));
@@ -47,11 +50,9 @@ export default function ComicDetail() {
     setAvgRating(getAverageRating(comic.slug));
   };
 
-
-  // Hapus komik
-  const [deleting, setDeleting] = useState(false);
   const handleDelete = async () => {
     if (!comic) return;
+    if (typeof window === "undefined") return;
     if (!window.confirm('Yakin ingin menghapus komik ini beserta semua chapter-nya?')) return;
     setDeleting(true);
     try {
@@ -295,31 +296,89 @@ export default function ComicDetail() {
         </div>
 
         {/* Chapter List */}
-        <h2 className="text-2xl font-bold mb-4 text-blue-700 flex items-center gap-2">📖 <span>Chapters</span></h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-bold text-blue-700 flex items-center gap-2">📖 <span>Chapters</span></h2>
+          <button
+            onClick={() => window.location.href = `/add-chapter?slug=${comic.slug}`}
+            className="px-3 py-1 rounded bg-green-500 text-white hover:bg-green-700 transition text-sm"
+          >
+            + Tambah Chapter
+          </button>
+        </div>
         {comic.chapters.length === 0 ? (
           <p className="text-gray-500">Belum ada chapter yang diunggah.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-            {comic.chapters.map((ch) => (
-              <Link
-                key={ch.number}
-                href={`/reader/${comic.slug}/${ch.number}`}
-                className="block border-2 border-blue-100 rounded-lg px-5 py-4 bg-gradient-to-br from-white to-blue-50 shadow hover:shadow-lg hover:border-blue-300 transition group"
-              >
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-blue-600 font-bold group-hover:underline">Chapter {ch.number}</span>
-                  <span className="text-xl text-gray-500">
-                  {ch.language === "English" && "🇬🇧"}
-                  {ch.language === "Japanese" && "🇯🇵"}
-                  {ch.language === "Korean" && "🇰🇷"}
-                  {ch.language === "Chinese" && "🇨🇳"}
-                  {ch.language === "Indonesian" && "🇮🇩"}
-                </span>
+            {comic.chapters.map((ch) => {
+              // Pastikan key unik dan konsisten
+              const chapterNum = typeof ch.number === "number" ? ch.number : Array.isArray(ch.number) ? ch.number.join("-") : String(ch.number);
+              // Format tanggal upload
+              const uploadDate = ch.uploadChapter
+                ? dayjs(Array.isArray(ch.uploadChapter) ? ch.uploadChapter[0] : ch.uploadChapter).format("DD MMM YYYY")
+                : "-";
+              // Badge bahasa
+              const langMap: Record<string, string> = {
+                English: "🇬🇧 English",
+                Japanese: "🇯🇵 Japanese",
+                Korean: "🇰🇷 Korean",
+                Chinese: "🇨🇳 Chinese",
+                Indonesian: "🇮🇩 Indonesian",
+              };
+              return (
+                <div key={chapterNum} className="relative group border-2 border-blue-100 rounded-lg px-5 py-4 bg-gradient-to-br from-white to-blue-50 shadow hover:shadow-lg hover:border-blue-300 transition flex flex-col justify-between min-h-[170px]">
+                  <Link
+                    href={`/reader/${comic.slug}/${ch.number}`}
+                    className="block"
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-blue-600 font-bold group-hover:underline text-lg">Chapter {ch.number}</span>
+                      {ch.language && (
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 border border-blue-200 ml-1">
+                          {langMap[ch.language] || ch.language}
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-base font-semibold text-gray-800 mb-1 truncate">{ch.title}</div>
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full border border-gray-200">
+                        <span className="font-semibold">Tanggal:</span> {uploadDate}
+                      </span>
+                      <span className="text-xs text-gray-400">{ch.uploadChapter ? dayjs(Array.isArray(ch.uploadChapter) ? ch.uploadChapter[0] : ch.uploadChapter).fromNow() : "-"}</span>
+                    </div>
+                  </Link>
+                  <div className="absolute top-2 right-2 flex gap-2 opacity-80 group-hover:opacity-100">
+                    <button
+                      onClick={() => {
+                        if (typeof window !== "undefined") {
+                          window.location.href = `/edit-chapter?slug=${comic.slug}&chapter=${ch.number}`;
+                        }
+                      }}
+                      className="px-2 py-1 rounded bg-blue-500 text-white text-xs hover:bg-blue-700 shadow"
+                      title="Edit chapter"
+                    >
+                      ✏️ Edit
+                    </button>
+                    <button
+                      onClick={async () => {
+                        if (typeof window === "undefined") return;
+                        if (!window.confirm('Yakin ingin menghapus chapter ini?')) return;
+                        const res = await fetch('/api/delete-chapter', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ slug: comic.slug, chapter: ch.number })
+                        });
+                        if (res.ok) window.location.reload();
+                        else alert('Gagal menghapus chapter!');
+                      }}
+                      className="px-2 py-1 rounded bg-red-500 text-white text-xs hover:bg-red-700 shadow"
+                      title="Hapus chapter"
+                    >
+                      🗑️ Hapus
+                    </button>
+                  </div>
                 </div>
-                <div className="text-sm font-medium text-gray-800 mb-1 truncate">{ch.title}</div>
-                <div className="text-xs text-gray-500">{ch.uploadChapter ? dayjs(ch.uploadChapter).fromNow() : "-"}</div>
-              </Link>
-            ))}
+              );
+            })}
           </div>
         )}
       </main>
