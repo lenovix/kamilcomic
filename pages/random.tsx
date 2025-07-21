@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import comics from "../data/comics.json";
+import Header from "@/components/Header";
 
 export default function RandomComicRedirect() {
   const router = useRouter();
@@ -14,8 +15,11 @@ export default function RandomComicRedirect() {
   }, []);
 
   return (
-    <main className="p-6 text-center">
-      <p className="text-gray-500">Mengambil komik acak...</p>
-    </main>
+    <>
+      <Header />
+      <main className="p-6 text-center">
+        <p className="text-gray-500">Mengambil komik acak...</p>
+      </main>
+    </>
   );
 }

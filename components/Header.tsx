@@ -18,7 +18,7 @@ export default function Header() {
       <div className=" mx-auto px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
         {/* Logo */}
         <Link href="/" className="text-xl font-bold text-blue-600">
-          📚 Kamil Comic v0
+          📚 Kamil Comic v0.0.5
         </Link>
 
         {/* Search */}
@@ -42,6 +42,9 @@ export default function Header() {
             className="text-yellow-600 hover:text-yellow-800 font-semibold"
           >
             ★ Bookmarks
+          </Link>
+          <Link href="/settings" className="text-gray-700 hover:text-blue-600">
+            ⚙️ Setting
           </Link>
         </div>
       </div>
