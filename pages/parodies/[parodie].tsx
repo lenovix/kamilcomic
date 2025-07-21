@@ -18,7 +18,7 @@ export default function ParodieDetailPage() {
         (p: string) => p.toLowerCase() === Parodies.toLowerCase()
       );
     }
-    return comic.parodies.toLowerCase() === Parodies.toLowerCase();
+    return typeof comic.parodies === "string" && comic.parodies.toLowerCase() === Parodies.toLowerCase();
   });
 
   // Tambahan: filter berdasarkan input pencarian
@@ -29,56 +29,65 @@ export default function ParodieDetailPage() {
   });
 
   return (
-    <>
-      <Header />
-      <main className="max-w-6xl mx-auto px-6 py-8">
-        <h1 className="text-2xl font-bold mb-4">
-          ✍️ Parodie: <span className="text-blue-600">{Parodies}</span>
-        </h1>
+  <>
+    <Header />
+    <main className="max-w-6xl mx-auto px-6 py-10">
+      {/* Judul Parodi */}
+      <h1 className="text-3xl font-bold mb-6">
+        ✍️ Parody: <span className="text-blue-600">{Parodies}</span>
+      </h1>
 
-        {/* Search bar */}
+      {/* Search Bar */}
+      <div className="mb-8">
+        <label htmlFor="search" className="sr-only">Cari komik</label>
         <input
+          id="search"
           type="text"
           placeholder="Cari judul komik..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full border px-4 py-2 rounded-md mb-6 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full border border-gray-300 px-4 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
         />
+      </div>
 
-        {filteredComics.length === 0 ? (
-          <p className="text-gray-500">Tidak ada komik dari Parodies ini.</p>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-            {filteredComics.map((comic) => (
-              <Link
-                key={comic.slug}
-                href={`/${comic.slug}`}
-                className="group border rounded-xl overflow-hidden shadow hover:shadow-md transition"
-              >
+      {/* Daftar Komik */}
+      {filteredComics.length === 0 ? (
+        <p className="text-gray-500 text-center">Tidak ada komik dari parodi ini.</p>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+          {filteredComics.map((comic) => (
+            <Link
+              key={comic.slug}
+              href={`/${comic.slug}`}
+              className="group border rounded-lg overflow-hidden bg-white hover:shadow-lg transition-shadow"
+            >
+              <div className="aspect-[2/3] overflow-hidden bg-gray-100">
                 <img
                   src={comic.cover || "/placeholder-cover.jpg"}
                   alt={Array.isArray(comic.title) ? comic.title.join(", ") : comic.title}
-                  className="w-full h-52 object-cover"
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
-                <div className="p-3 bg-white">
-                  <h2 className="text-sm font-semibold group-hover:text-blue-600">
-                    {comic.title}
-                  </h2>
-                  <span
-                    className={`inline-block mt-1 text-xs font-medium px-2 py-0.5 rounded-full ${
-                      comic.status === "Completed"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-yellow-100 text-yellow-700"
-                    }`}
-                  >
-                    {comic.status}
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
-      </main>
-    </>
-  );
+              </div>
+              <div className="p-3">
+                <h2 className="text-sm font-semibold group-hover:text-blue-600 leading-snug line-clamp-2">
+                  {comic.title}
+                </h2>
+                <span
+                  className={`inline-block mt-2 text-xs font-medium px-2 py-1 rounded-full ${
+                    comic.status === "Completed"
+                      ? "bg-green-100 text-green-700"
+                      : "bg-yellow-100 text-yellow-700"
+                  }`}
+                >
+                  {comic.status}
+                </span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
+    </main>
+  </>
+);
+
 }

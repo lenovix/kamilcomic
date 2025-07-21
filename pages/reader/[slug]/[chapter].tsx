@@ -21,7 +21,9 @@ export default function ReaderPage() {
   useEffect(() => {
     // Hanya jalan di client, fetch daftar file dari API custom
     async function fetchPages() {
-      const res = await fetch(`/api/list-pages?slug=${comic?.slug}&chapter=${chapter?.number}`);
+      const res = await fetch(
+        `/api/list-pages?slug=${comic?.slug}&chapter=${chapter?.number}`
+      );
       if (res.ok) {
         const data = await res.json();
         setPages(data.pages || []);
@@ -31,32 +33,70 @@ export default function ReaderPage() {
   }, [comic.slug, chapter.number]);
 
   // Cari index chapter saat ini
-  const chapterIndex = comic.chapters.findIndex((ch) => ch.number === chapter.number);
-  const prevChapter = chapterIndex > 0 ? comic.chapters[chapterIndex - 1] : null;
-  const nextChapter = chapterIndex < comic.chapters.length - 1 ? comic.chapters[chapterIndex + 1] : null;
+  const chapterIndex = comic.chapters.findIndex(
+    (ch) => ch.number === chapter.number
+  );
+  const prevChapter =
+    chapterIndex > 0 ? comic.chapters[chapterIndex - 1] : null;
+  const nextChapter =
+    chapterIndex < comic.chapters.length - 1
+      ? comic.chapters[chapterIndex + 1]
+      : null;
 
   return (
-    <main className="p-6 max-w-5xl mx-auto">
-      {/* Header */}
-      <div className="mb-6">
+    <main className="px-4 py-8 max-w-5xl mx-auto">
+      {/* Back Link */}
+      <div className="mb-4">
         <Link
           href={`/${comic.slug}`}
           className="text-sm text-blue-600 hover:underline"
         >
           ← Back to {comic.title}
         </Link>
-        <h1 className="text-2xl font-bold mt-2">
+      </div>
+
+      {/* Header Komik */}
+      <div className="mb-4">
+        <h1 className="text-2xl font-bold mb-1">
           {comic.title} - Chapter {chapter.number}
         </h1>
-        <div className="text-sm text-gray-600 mt-1">
-          Language: {chapter.language || "Unknown"} •{" "}
-          {chapter.uploadChapter
-            ? `Uploaded: ${dayjs(chapter.uploadChapter).fromNow()}, ${comic.uploaded || "-"}`
-            : "Unknown date"}
+        <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600">
+          <span className="bg-gray-100 px-2 py-1 rounded">
+            {chapter.language || "Unknown"}
+          </span>
+          {chapter.uploadChapter && (
+            <span className="bg-gray-100 px-2 py-1 rounded">
+              Uploaded {dayjs(chapter.uploadChapter).fromNow()}
+            </span>
+          )}
         </div>
       </div>
 
-      {/* Image pages */}
+      {/* Navigasi Chapter - atas */}
+      <div className="flex justify-between items-center mb-6">
+        {prevChapter ? (
+          <Link
+            href={`/reader/${comic.slug}/${prevChapter.number}`}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            ← Chapter {prevChapter.number}
+          </Link>
+        ) : (
+          <div />
+        )}
+        {nextChapter ? (
+          <Link
+            href={`/reader/${comic.slug}/${nextChapter.number}`}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Chapter {nextChapter.number} →
+          </Link>
+        ) : (
+          <div />
+        )}
+      </div>
+
+      {/* Gambar Halaman */}
       <div className="flex flex-col items-center gap-4">
         {pages.length > 0 ? (
           pages.map((filename, i) => (
@@ -72,7 +112,7 @@ export default function ReaderPage() {
         )}
       </div>
 
-      {/* Navigasi chapter */}
+      {/* Navigasi Chapter - bawah */}
       <div className="flex justify-between items-center mt-8">
         {prevChapter ? (
           <Link
@@ -81,7 +121,9 @@ export default function ReaderPage() {
           >
             ← Chapter {prevChapter.number}
           </Link>
-        ) : <div />}
+        ) : (
+          <div />
+        )}
         {nextChapter ? (
           <Link
             href={`/reader/${comic.slug}/${nextChapter.number}`}
@@ -89,7 +131,9 @@ export default function ReaderPage() {
           >
             Chapter {nextChapter.number} →
           </Link>
-        ) : <div />}
+        ) : (
+          <div />
+        )}
       </div>
     </main>
   );
