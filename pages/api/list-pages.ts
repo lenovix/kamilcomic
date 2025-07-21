@@ -9,7 +9,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     if (!fs.existsSync(dir)) return res.status(200).json({ pages: [] });
     const files = fs.readdirSync(dir)
-      .filter(f => f.match(/^page\d+\.jpg$/i))
+      .filter(f => /^page\d+\.(jpg|jpeg|png|webp)$/i.test(f))
       .sort((a, b) => {
         // Sort by page number
         const na = parseInt(a.replace(/\D/g, ''));

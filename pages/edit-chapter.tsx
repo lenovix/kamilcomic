@@ -10,7 +10,7 @@ export default function EditChapter() {
   const [chapterData, setChapterData] = useState<any>(null);
   const [form, setForm] = useState<any>({});
   const [loading, setLoading] = useState(false);
-  const [pages, setPages] = useState<Array<{ id: string; file?: File; url?: string }>>([]);
+  const [pages, setPages] = useState<Array<{ id: string; file?: File; url?: string; filename?: string }>>([]);
   const [newFiles, setNewFiles] = useState<File[]>([]);
 
   useEffect(() => {
@@ -29,12 +29,26 @@ export default function EditChapter() {
     fetch(`/api/list-pages?slug=${slug}&chapter=${chapter}`)
       .then((res) => res.json())
       .then((data) => {
-        setPages(
-          (data.pages || []).map((filename: string, idx: number) => ({
-            id: `${idx}-${filename}`,
-            url: `/comics/${slug}/chapters/${chapter}/${filename}`,
-          }))
-        );
+        // Support both array of string and array of object
+        if (Array.isArray(data.pages) && data.pages.length > 0 && typeof data.pages[0] === 'object') {
+          setPages(
+            data.pages.map((page: any, idx: number) => ({
+              id: page.id || `${idx}-${page.filename}`,
+              url: `/comics/${slug}/chapters/${chapter}/${page.filename}`,
+              filename: page.filename
+            }))
+          );
+        } else if (Array.isArray(data.pages)) {
+          setPages(
+            data.pages.map((filename: string, idx: number) => ({
+              id: `${idx}-${filename}`,
+              url: `/comics/${slug}/chapters/${chapter}/${filename}`,
+              filename
+            }))
+          );
+        } else {
+          setPages([]);
+        }
       });
   }, [slug, chapter]);
 
@@ -160,9 +174,7 @@ export default function EditChapter() {
                         <div
                           ref={prov.innerRef}
                           {...prov.draggableProps}
-                          className={`border rounded shadow bg-white p-2 flex flex-col items-center min-w-[100px] select-none ${
-                            snapshot.isDragging ? "ring-2 ring-blue-400" : ""
-                          }`}
+                          className={`border rounded shadow bg-white p-2 flex flex-col items-center min-w-[100px] select-none ${snapshot.isDragging ? "ring-2 ring-blue-400" : ""}`}
                           style={{ minWidth: 100, ...prov.draggableProps.style }}
                         >
                           <span
@@ -179,9 +191,10 @@ export default function EditChapter() {
                             className="w-20 h-28 object-contain mb-1"
                             draggable={false}
                             style={{ pointerEvents: "none" }}
+                            onError={(e) => { e.currentTarget.src = '/file.svg'; }}
                           />
                           <span className="text-xs text-gray-600">
-                            {page.file ? page.file.name : page.id.split("-").slice(1).join("-")}
+                            {page.filename || (page.file ? page.file.name : page.id.split("-").slice(1).join("-"))}
                           </span>
                         </div>
                       )}

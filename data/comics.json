@@ -1,1 +1,76 @@
-[]
+[
+  {
+    "slug": 1,
+    "title": "testing 1",
+    "parodies": [
+      "ts1",
+      "ts11"
+    ],
+    "characters": [
+      "ts1",
+      "ts11"
+    ],
+    "artists": [
+      "ts1",
+      "ts11"
+    ],
+    "groups": [
+      "ts1",
+      "ts11"
+    ],
+    "categories": [
+      "ts1",
+      "ts11"
+    ],
+    "uploaded": "2025-07-21",
+    "author": "ts1,ts11",
+    "tags": [
+      "ts1",
+      "ts11"
+    ],
+    "status": "Ongoing",
+    "cover": "/comics/1/cover.jpg",
+    "chapters": [
+      {
+        "number": "001",
+        "title": "ch1",
+        "language": "English",
+        "uploadChapter": "2025-07-21 18:11:38",
+        "pages": [
+          {
+            "id": "1753096298011_0.9230489767173053",
+            "filename": "page1.jpg"
+          },
+          {
+            "id": "1753096298012_0.7612703290630591",
+            "filename": "page2.jpg"
+          },
+          {
+            "id": "1753096298013_0.7629538690644753",
+            "filename": "page3.jpg"
+          }
+        ]
+      },
+      {
+        "number": "002",
+        "title": "ch2",
+        "language": "English",
+        "uploadChapter": "2025-07-21 18:19:26",
+        "pages": [
+          {
+            "id": "1753096766034_0.003388813686633796",
+            "filename": "page1.png"
+          },
+          {
+            "id": "1753096766035_0.9076334759078339",
+            "filename": "page2.jpg"
+          },
+          {
+            "id": "1753096766036_0.1490802535242315",
+            "filename": "page3.jpg"
+          }
+        ]
+      }
+    ]
+  }
+]
