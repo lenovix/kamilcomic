@@ -216,8 +216,20 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
                   className="border p-2 rounded"
                 />
                 <input
-                  name="author"
-                  placeholder="Author (pisah dengan koma)"
+                  name="parodies"
+                  placeholder="Parodies (pisah dengan koma)"
+                  onChange={handleComicChange}
+                  className="border p-2 rounded"
+                />
+                <input
+                  name="characters"
+                  placeholder="Characters (pisah dengan koma)"
+                  onChange={handleComicChange}
+                  className="border p-2 rounded"
+                />
+                <input
+                  name="tags"
+                  placeholder="Tags (pisah dengan koma)"
                   onChange={handleComicChange}
                   className="border p-2 rounded"
                 />
@@ -234,26 +246,14 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
                   className="border p-2 rounded"
                 />
                 <input
-                  name="parodies"
-                  placeholder="Parodies (pisah dengan koma)"
-                  onChange={handleComicChange}
-                  className="border p-2 rounded"
-                />
-                <input
-                  name="characters"
-                  placeholder="Characters (pisah dengan koma)"
+                  name="author"
+                  placeholder="Author (pisah dengan koma)"
                   onChange={handleComicChange}
                   className="border p-2 rounded"
                 />
                 <input
                   name="categories"
                   placeholder="Categories (pisah dengan koma)"
-                  onChange={handleComicChange}
-                  className="border p-2 rounded"
-                />
-                <input
-                  name="tags"
-                  placeholder="Tags (pisah dengan koma)"
                   onChange={handleComicChange}
                   className="border p-2 rounded"
                 />
