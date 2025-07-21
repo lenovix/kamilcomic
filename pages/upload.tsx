@@ -32,7 +32,9 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
   const [chapters, setChapters] = useState([
     { number: "001", title: "", language: "English", files: [] as File[] },
   ]);
-  const [previewChapterIndex, setPreviewChapterIndex] = useState<number | null>(null);
+  const [previewChapterIndex, setPreviewChapterIndex] = useState<number | null>(
+    null
+  );
 
   const handleComicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setComicData({ ...comicData, [e.target.name]: e.target.value });
@@ -177,68 +179,10 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
         <h1 className="text-2xl font-bold mb-4">📤 Upload Comic</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           <section className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <input
-                name="slug"
-                value={comicData.slug}
-                onChange={handleComicChange}
-                required
-                className="border p-2 rounded"
-                readOnly
-              />
-              <input
-                name="title"
-                placeholder="Title"
-                onChange={handleComicChange}
-                required
-                className="border p-2 rounded"
-              />
-              <input
-                name="author"
-                placeholder="Author (pisah dengan koma)"
-                onChange={handleComicChange}
-                className="border p-2 rounded"
-              />
-              <input
-                name="artist"
-                placeholder="Artist (pisah dengan koma)"
-                onChange={handleComicChange}
-                className="border p-2 rounded"
-              />
-              <input
-                name="groups"
-                placeholder="Groups (pisah dengan koma)"
-                onChange={handleComicChange}
-                className="border p-2 rounded"
-              />
-              <input
-                name="parodies"
-                placeholder="Parodies (pisah dengan koma)"
-                onChange={handleComicChange}
-                className="border p-2 rounded"
-              />
-              <input
-                name="characters"
-                placeholder="Characters (pisah dengan koma)"
-                onChange={handleComicChange}
-                className="border p-2 rounded"
-              />
-              <input
-                name="categories"
-                placeholder="Categories (pisah dengan koma)"
-                onChange={handleComicChange}
-                className="border p-2 rounded"
-              />
-              <input
-                name="tags"
-                placeholder="Tags (pisah dengan koma)"
-                onChange={handleComicChange}
-                className="col-span-2 border p-2 rounded"
-              />
-              <div className="col-span-2">
-                <label className="block text-sm font-medium mb-1">
-                  Cover Image
-                </label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* KIRI - Cover dan Preview */}
+              <div className="space-y-3">
+                <label className="block text-sm font-medium">Cover Image</label>
                 <input
                   type="file"
                   accept="image/*"
@@ -249,9 +193,70 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
                   <img
                     src={comicData.cover}
                     alt="Preview Cover"
-                    className="mt-2 w-48 h-auto rounded shadow"
+                    className="mt-2 w-full max-w-xs rounded shadow"
                   />
                 )}
+              </div>
+
+              {/* KANAN - Form Detail Komik */}
+              <div className="grid grid-cols-1 gap-4">
+                <input
+                  name="slug"
+                  value={comicData.slug}
+                  onChange={handleComicChange}
+                  required
+                  readOnly
+                  className="border p-2 rounded"
+                />
+                <input
+                  name="title"
+                  placeholder="Title"
+                  onChange={handleComicChange}
+                  required
+                  className="border p-2 rounded"
+                />
+                <input
+                  name="author"
+                  placeholder="Author (pisah dengan koma)"
+                  onChange={handleComicChange}
+                  className="border p-2 rounded"
+                />
+                <input
+                  name="artist"
+                  placeholder="Artist (pisah dengan koma)"
+                  onChange={handleComicChange}
+                  className="border p-2 rounded"
+                />
+                <input
+                  name="groups"
+                  placeholder="Groups (pisah dengan koma)"
+                  onChange={handleComicChange}
+                  className="border p-2 rounded"
+                />
+                <input
+                  name="parodies"
+                  placeholder="Parodies (pisah dengan koma)"
+                  onChange={handleComicChange}
+                  className="border p-2 rounded"
+                />
+                <input
+                  name="characters"
+                  placeholder="Characters (pisah dengan koma)"
+                  onChange={handleComicChange}
+                  className="border p-2 rounded"
+                />
+                <input
+                  name="categories"
+                  placeholder="Categories (pisah dengan koma)"
+                  onChange={handleComicChange}
+                  className="border p-2 rounded"
+                />
+                <input
+                  name="tags"
+                  placeholder="Tags (pisah dengan koma)"
+                  onChange={handleComicChange}
+                  className="border p-2 rounded"
+                />
               </div>
             </div>
           </section>
@@ -338,57 +343,63 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
         </form>
 
         {/* Modal untuk Preview Gambar dengan Drag-and-Drop */}
-        {previewChapterIndex !== null && chapters[previewChapterIndex].files.length > 0 && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg max-w-3xl w-full max-h-[80vh] overflow-y-auto">
-              <h2 className="text-lg font-semibold mb-4">
-                Preview Chapter {chapters[previewChapterIndex].number}
-              </h2>
-              <DragDropContext onDragEnd={handleDragEnd}>
-                <Droppable droppableId="chapter-images">
-                  {(provided) => (
-                    <div
-                      className="grid grid-cols-2 gap-4"
-                      {...provided.droppableProps}
-                      ref={provided.innerRef}
-                    >
-                      {chapters[previewChapterIndex].files.map((file, idx) => (
-                        file.type.startsWith("image/") && (
-                          <Draggable key={idx} draggableId={`image-${idx}`} index={idx}>
-                            {(provided) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                className="relative"
+        {previewChapterIndex !== null &&
+          chapters[previewChapterIndex].files.length > 0 && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white p-6 rounded-lg max-w-3xl w-full max-h-[80vh] overflow-y-auto">
+                <h2 className="text-lg font-semibold mb-4">
+                  Preview Chapter {chapters[previewChapterIndex].number}
+                </h2>
+                <DragDropContext onDragEnd={handleDragEnd}>
+                  <Droppable droppableId="chapter-images">
+                    {(provided) => (
+                      <div
+                        className="grid grid-cols-2 gap-4"
+                        {...provided.droppableProps}
+                        ref={provided.innerRef}
+                      >
+                        {chapters[previewChapterIndex].files.map(
+                          (file, idx) =>
+                            file.type.startsWith("image/") && (
+                              <Draggable
+                                key={idx}
+                                draggableId={`image-${idx}`}
+                                index={idx}
                               >
-                                <img
-                                  src={URL.createObjectURL(file)}
-                                  alt={`Page ${idx + 1}`}
-                                  className="w-full h-auto rounded shadow cursor-move"
-                                />
-                                <span className="absolute top-0 left-0 bg-gray-800 text-white text-xs px-2 py-1 rounded">
-                                  Page {idx + 1}
-                                </span>
-                              </div>
-                            )}
-                          </Draggable>
-                        )
-                      ))}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
-              </DragDropContext>
-              <button
-                onClick={closePreview}
-                className="mt-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition"
-              >
-                Tutup
-              </button>
+                                {(provided) => (
+                                  <div
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                    className="relative"
+                                  >
+                                    <img
+                                      src={URL.createObjectURL(file)}
+                                      alt={`Page ${idx + 1}`}
+                                      className="w-full h-auto rounded shadow cursor-move"
+                                    />
+                                    <span className="absolute top-0 left-0 bg-gray-800 text-white text-xs px-2 py-1 rounded">
+                                      Page {idx + 1}
+                                    </span>
+                                  </div>
+                                )}
+                              </Draggable>
+                            )
+                        )}
+                        {provided.placeholder}
+                      </div>
+                    )}
+                  </Droppable>
+                </DragDropContext>
+                <button
+                  onClick={closePreview}
+                  className="mt-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition"
+                >
+                  Tutup
+                </button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
       </main>
     </>
   );
