@@ -1,1 +1,42 @@
-[]
+[
+  {
+    "slug": 1,
+    "title": "sdfg",
+    "parodies": [
+      ""
+    ],
+    "characters": [
+      ""
+    ],
+    "artists": [
+      ""
+    ],
+    "groups": [
+      ""
+    ],
+    "categories": [
+      ""
+    ],
+    "uploaded": "2025-07-21",
+    "author": "ts5",
+    "tags": [
+      ""
+    ],
+    "status": "Ongoing",
+    "cover": "/comics/1/cover.jpg",
+    "chapters": [
+      {
+        "number": "001",
+        "title": "gdfs",
+        "language": "English",
+        "uploadChapter": "2025-07-21",
+        "pages": [
+          {
+            "id": "1753086602860_0",
+            "filename": "page1.jpg"
+          }
+        ]
+      }
+    ]
+  }
+]
