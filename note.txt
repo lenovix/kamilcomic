@@ -1,4 +1,0 @@
-next plan: upload page
-
-Bug:
-- setelah menyimpan perubahan pada urutan page/gamabr chapter, urutan tidak langsung berubah, harus di refresh dulu

@@ -1,5 +1,3 @@
-
-
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import comicsData from "../data/comics.json";
@@ -12,8 +10,8 @@ export default function EditChapter() {
   const [chapterData, setChapterData] = useState<any>(null);
   const [form, setForm] = useState<any>({});
   const [loading, setLoading] = useState(false);
-  const [pages, setPages] = useState<string[]>([]);
-  const [savingOrder, setSavingOrder] = useState(false);
+  const [pages, setPages] = useState<Array<{ id: string; file?: File; url?: string }>>([]);
+  const [newFiles, setNewFiles] = useState<File[]>([]);
 
   useEffect(() => {
     if (!slug || !chapter) return;
@@ -30,22 +28,49 @@ export default function EditChapter() {
     // Fetch pages
     fetch(`/api/list-pages?slug=${slug}&chapter=${chapter}`)
       .then((res) => res.json())
-      .then((data) => setPages(data.pages || []));
+      .then((data) => {
+        setPages(
+          (data.pages || []).map((filename: string, idx: number) => ({
+            id: `${idx}-${filename}`,
+            url: `/comics/${slug}/chapters/${chapter}/${filename}`,
+          }))
+        );
+      });
   }, [slug, chapter]);
 
   const handleChange = (e: any) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files ? Array.from(e.target.files) : [];
+    setNewFiles(files);
+    const newPages = files.map((file, idx) => ({
+      id: `new-${Date.now()}-${idx}`,
+      file,
+      url: URL.createObjectURL(file),
+    }));
+    setPages([...pages, ...newPages]);
+  };
+
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setLoading(true);
+
+    const formData = new FormData();
+    formData.append("slug", slug as string);
+    formData.append("chapter", chapter as string);
+    formData.append("title", form.title);
+    formData.append("language", form.language);
+    formData.append("order", JSON.stringify(pages.map((page) => page.id)));
+    newFiles.forEach((file) => {
+      formData.append("files", file);
+    });
+
     try {
-      // Gabungkan update form dan urutan gambar
       const res = await fetch("/api/edit-chapter", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug, chapter, ...form, order: pages }),
+        body: formData,
       });
       if (res.ok) {
         router.push(`/${slug}`);
@@ -59,35 +84,12 @@ export default function EditChapter() {
     }
   };
 
-  // Drag and drop reorder
   const onDragEnd = (result: any) => {
     if (!result.destination) return;
     const newPages = Array.from(pages);
     const [removed] = newPages.splice(result.source.index, 1);
     newPages.splice(result.destination.index, 0, removed);
-    setPages([...newPages]);
-  };
-
-  const handleSaveOrder = async () => {
-    setSavingOrder(true);
-    try {
-      const res = await fetch("/api/reorder-pages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug, chapter, order: pages }),
-      });
-      if (res.ok) {
-        alert("Urutan gambar berhasil disimpan!");
-        // reload pages from server
-        fetch(`/api/list-pages?slug=${slug}&chapter=${chapter}`)
-          .then((res) => res.json())
-          .then((data) => setPages(data.pages || []));
-      } else {
-        alert("Gagal menyimpan urutan gambar!");
-      }
-    } finally {
-      setSavingOrder(false);
-    }
+    setPages(newPages);
   };
 
   if (!chapterData) return <p className="p-6">Loading...</p>;
@@ -100,13 +102,38 @@ export default function EditChapter() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block font-semibold mb-1">Judul Chapter</label>
-            <input name="title" value={form.title} onChange={handleChange} className="w-full border rounded px-3 py-2" required />
+            <input
+              name="title"
+              value={form.title}
+              onChange={handleChange}
+              className="w-full border rounded px-3 py-2"
+              required
+            />
           </div>
           <div>
             <label className="block font-semibold mb-1">Bahasa</label>
-            <input name="language" value={form.language} onChange={handleChange} className="w-full border rounded px-3 py-2" />
+            <input
+              name="language"
+              value={form.language}
+              onChange={handleChange}
+              className="w-full border rounded px-3 py-2"
+            />
           </div>
-          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded" disabled={loading}>
+          <div>
+            <label className="block font-semibold mb-1">Upload Gambar Baru</label>
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={handleFileUpload}
+              className="w-full border rounded px-3 py-2"
+            />
+          </div>
+          <button
+            type="submit"
+            className="bg-blue-600 text-white px-4 py-2 rounded"
+            disabled={loading}
+          >
             {loading ? "Menyimpan..." : "Simpan Perubahan"}
           </button>
         </form>
@@ -127,16 +154,17 @@ export default function EditChapter() {
                   {pages.length === 0 && (
                     <span className="text-gray-400 text-sm">Tidak ada gambar di chapter ini.</span>
                   )}
-                  {pages.map((filename, idx) => (
-                    <Draggable key={idx + '-' + filename} draggableId={idx + '-' + filename} index={idx}>
+                  {pages.map((page, idx) => (
+                    <Draggable key={page.id} draggableId={page.id} index={idx}>
                       {(prov: any, snapshot: any) => (
                         <div
                           ref={prov.innerRef}
                           {...prov.draggableProps}
-                          className={`border rounded shadow bg-white p-2 flex flex-col items-center min-w-[100px] select-none ${snapshot.isDragging ? 'ring-2 ring-blue-400' : ''}`}
+                          className={`border rounded shadow bg-white p-2 flex flex-col items-center min-w-[100px] select-none ${
+                            snapshot.isDragging ? "ring-2 ring-blue-400" : ""
+                          }`}
                           style={{ minWidth: 100, ...prov.draggableProps.style }}
                         >
-                          {/* Drag handle icon */}
                           <span
                             {...prov.dragHandleProps}
                             className="cursor-grab text-gray-400 hover:text-blue-500 mb-1"
@@ -146,13 +174,15 @@ export default function EditChapter() {
                             ☰
                           </span>
                           <img
-                            src={`/comics/${slug}/chapters/${chapter}/${filename}`}
+                            src={page.url}
                             alt={`Page ${idx + 1}`}
                             className="w-20 h-28 object-contain mb-1"
                             draggable={false}
-                            style={{ pointerEvents: 'none' }}
+                            style={{ pointerEvents: "none" }}
                           />
-                          <span className="text-xs text-gray-600">{filename}</span>
+                          <span className="text-xs text-gray-600">
+                            {page.file ? page.file.name : page.id.split("-").slice(1).join("-")}
+                          </span>
                         </div>
                       )}
                     </Draggable>
