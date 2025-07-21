@@ -1,31 +1,41 @@
 # 📚 KamilComic - Comic Collection Web App
 
-A simple personal comic collection app built with **Next.js**, designed to upload and manage comic metadata and chapters manually.
+A simple personal comic collection app built with **Next.js**, designed to manually upload and manage your personal comic collection, including chapters and metadata.
 
 ---
 
 ## ✨ Fitur Saat Ini
 
-- Upload informasi komik:
-  - Judul, author, artist, grup, karakter, parodi, kategori, tag, status
+- Upload informasi komik secara manual:
+  - Judul, author, artist, grup, karakter, parodi, kategori, tag, dan status
 - Upload cover image
 - Tambahkan satu atau lebih chapter:
-  - Nomor chapter, judul, bahasa, dan file (gambar atau .zip/.rar)
-- Chapter bisa dihapus (kecuali chapter pertama)
-- Slug otomatis terisi dari `comics.json` server
-- Menyimpan file ke `/public/comics/[slug]/...` (simulasi backend)
+  - Nomor chapter otomatis (mulai dari 001 dan meningkat)
+  - Judul chapter, bahasa, dan file (gambar atau .zip/.rar)
+- Field multi-input (tags, author, artist, grup, dst.) bisa dipisah dengan koma
+- Slug otomatis berdasarkan judul
+- Chapter bisa dihapus (nomor akan diperbarui otomatis)
+- Simpan file ke struktur `/public/comics/[slug]/chapter/`
+- Simulasi backend: metadata disimpan ke `data/comics.json`
+- Pencarian berdasarkan judul
+- Halaman list berdasarkan:
+  - Author, Artist, Grup, Tag, Karakter, Parodi, Kategori
+- Halaman detail komik dan galeri chapter
+- Halaman Setting:
+  - Hapus semua komik
+  - Bersihkan cache upload
 
 ---
 
-## 🐞 Bug/Issue Saat Ini
+## 🐞 Bug / Issue Saat Ini
 
-- ❗ setelah menyimpan perubahan pada urutan page/gamabr chapter, urutan tidak langsung berubah, harus di refresh dulu
-- ❗ web belum bisa menerima file .png
+- ❗ Setelah menyimpan urutan gambar chapter, tampilan belum langsung berubah (perlu refresh)
 - ❗ Error 500 jika file tidak lengkap atau field `chapters` tidak dikirim dengan benar
 - ❗ Tidak ada validasi tipe file & ukuran maksimum
-- ❗ Upload belum menyimpan metadata ke `comics.json`
-- ❗ Form tidak memperingatkan user sebelum pindah halaman (data hilang)
-- ❗ Tidak ada progress bar saat upload (UI)
+- ❗ Form tidak memperingatkan user sebelum pindah halaman (data bisa hilang)
+- ❗ Tidak ada progress bar saat upload
+- ❗ Bookmark belum tersimpan ke localStorage
+- ❗ Halaman tags/author/etc. belum memiliki pagination jika terlalu banyak item
 
 ---
 
@@ -34,7 +44,11 @@ A simple personal comic collection app built with **Next.js**, designed to uploa
 - ✅ Simpan metadata komik & chapter ke `data/comics.json`
 - ✅ Validasi form input (wajib isi, batas panjang, dll.)
 - ✅ Progress bar dan notifikasi upload
-- ✅ Fitur preview chapter (gambar)
-- ✅ Tambahkan halaman list komik (`/comics`)
+- ✅ Preview gambar chapter saat upload
+- ✅ Halaman list komik (`/comics`)
 - ✅ Halaman detail per komik dengan galeri per chapter
-- 🗃️ Cari/filter komik berdasarkan tag, kategori, status
+- 🔍 Pencarian dan filter lanjutan (tags, kategori, status)
+- 📝 Mode edit metadata komik
+- 🔐 Login sederhana (opsional, untuk keamanan upload)
+- 📁 Support drag & drop gambar ke upload
+- 📦 Ekstrak otomatis dari file `.zip` / `.rar`
