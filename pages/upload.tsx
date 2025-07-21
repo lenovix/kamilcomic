@@ -1,10 +1,10 @@
-// (bagian import tetap sama)
 import { useState } from "react";
 import { useRouter } from "next/router";
 import Header from "@/components/Header";
 import { GetServerSideProps } from "next";
 import fs from "fs";
 import path from "path";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 interface UploadComicPageProps {
   defaultSlug: number;
@@ -29,10 +29,10 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
   });
 
   const [coverFile, setCoverFile] = useState<File | null>(null);
-
   const [chapters, setChapters] = useState([
     { number: "001", title: "", language: "English", files: [] as File[] },
   ]);
+  const [previewChapterIndex, setPreviewChapterIndex] = useState<number | null>(null);
 
   const handleComicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setComicData({ ...comicData, [e.target.name]: e.target.value });
@@ -53,7 +53,6 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
     const updated = [...chapters];
     const key = e.target.name as keyof (typeof updated)[number];
     if (key === "files") {
-      // Do not assign string to files
       return;
     }
     updated[index][key] = e.target.value as never;
@@ -89,7 +88,6 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validasi minimal judul dan chapter
     if (!comicData.title) {
       alert("Judul komik wajib diisi");
       return;
@@ -98,7 +96,6 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
       alert("Minimal 1 chapter dengan judul wajib diisi");
       return;
     }
-    // Validasi: semua chapter harus ada number, title, dan files (minimal 1 file)
     for (const ch of chapters) {
       if (!ch.number || !ch.title || !ch.language) {
         alert("Semua chapter wajib diisi nomor, judul, dan bahasa!");
@@ -152,6 +149,25 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
       console.error("Network error:", error);
       alert("Terjadi kesalahan jaringan");
     }
+  };
+
+  const openPreview = (index: number) => {
+    setPreviewChapterIndex(index);
+  };
+
+  const closePreview = () => {
+    setPreviewChapterIndex(null);
+  };
+
+  const handleDragEnd = (result: any) => {
+    if (!result.destination || previewChapterIndex === null) return;
+
+    const updatedChapters = [...chapters];
+    const files = [...updatedChapters[previewChapterIndex].files];
+    const [reorderedItem] = files.splice(result.source.index, 1);
+    files.splice(result.destination.index, 0, reorderedItem);
+    updatedChapters[previewChapterIndex].files = files;
+    setChapters(updatedChapters);
   };
 
   return (
@@ -278,9 +294,20 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
                   className="w-full border p-2 rounded"
                 />
                 {ch.files && (
-                  <p className="text-sm text-gray-500">
-                    {ch.files.length} file dipilih
-                  </p>
+                  <div className="flex items-center space-x-2">
+                    <p className="text-sm text-gray-500">
+                      {ch.files.length} file dipilih
+                    </p>
+                    {ch.files.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => openPreview(index)}
+                        className="text-sm text-blue-600 hover underline"
+                      >
+                        Preview Gambar
+                      </button>
+                    )}
+                  </div>
                 )}
                 {index > 0 && (
                   <button
@@ -309,12 +336,64 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
             Simpan Komik
           </button>
         </form>
+
+        {/* Modal untuk Preview Gambar dengan Drag-and-Drop */}
+        {previewChapterIndex !== null && chapters[previewChapterIndex].files.length > 0 && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg max-w-3xl w-full max-h-[80vh] overflow-y-auto">
+              <h2 className="text-lg font-semibold mb-4">
+                Preview Chapter {chapters[previewChapterIndex].number}
+              </h2>
+              <DragDropContext onDragEnd={handleDragEnd}>
+                <Droppable droppableId="chapter-images">
+                  {(provided) => (
+                    <div
+                      className="grid grid-cols-2 gap-4"
+                      {...provided.droppableProps}
+                      ref={provided.innerRef}
+                    >
+                      {chapters[previewChapterIndex].files.map((file, idx) => (
+                        file.type.startsWith("image/") && (
+                          <Draggable key={idx} draggableId={`image-${idx}`} index={idx}>
+                            {(provided) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                className="relative"
+                              >
+                                <img
+                                  src={URL.createObjectURL(file)}
+                                  alt={`Page ${idx + 1}`}
+                                  className="w-full h-auto rounded shadow cursor-move"
+                                />
+                                <span className="absolute top-0 left-0 bg-gray-800 text-white text-xs px-2 py-1 rounded">
+                                  Page {idx + 1}
+                                </span>
+                              </div>
+                            )}
+                          </Draggable>
+                        )
+                      ))}
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </DragDropContext>
+              <button
+                onClick={closePreview}
+                className="mt-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        )}
       </main>
     </>
   );
 }
 
-// ✅ Ambil slug terakhir dari comics.json di server
 export const getServerSideProps: GetServerSideProps = async () => {
   const filePath = path.join(process.cwd(), "data", "comics.json");
 
