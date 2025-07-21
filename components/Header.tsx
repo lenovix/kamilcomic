@@ -15,7 +15,7 @@ export default function Header() {
 
   return (
     <header className="w-full bg-white shadow sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className=" mx-auto px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
         {/* Logo */}
         <Link href="/" className="text-xl font-bold text-blue-600">
           📚 Kamil Comic
@@ -48,7 +48,7 @@ export default function Header() {
 
       {/* Navigation Menu */}
       <nav className="bg-gray-50 border-t border-b border-gray-200 text-sm">
-        <div className="max-w-7xl mx-auto px-6 py-2 flex flex-wrap gap-4">
+        <div className=" mx-auto px-6 py-2 flex flex-wrap gap-4">
           <Link href="/random" className="text-gray-600 hover:text-blue-600">
             🎲 Random
           </Link>
