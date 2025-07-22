@@ -9,6 +9,9 @@ export const config = {
   },
 };
 
+const uniqueArray = (arr: string[]) =>
+  [...new Set(arr.map((v) => v.trim()).filter(Boolean))];
+
 const uploadDir = path.join(process.cwd(), 'public', 'comics');
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -91,14 +94,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       const newComic = {
         slug: Number(slug),
         title: Array.isArray(fields.title) ? fields.title[0] : (fields.title ?? ''),
-        parodies: toArray(fields.parodies),
-        characters: toArray(fields.characters),
-        artists: toArray(fields.artist || fields.artists),
-        groups: toArray(fields.groups),
-        categories: toArray(fields.categories),
+        parodies: uniqueArray(toArray(fields.parodies)),
+        characters: uniqueArray(toArray(fields.characters)),
+        artists: uniqueArray(toArray(fields.artist || fields.artists)),
+        groups: uniqueArray(toArray(fields.groups)),
+        categories: uniqueArray(toArray(fields.categories)),
         uploaded: new Date().toLocaleString('sv-SE', { timeZone: 'Asia/Jakarta' }).replace('T', ' '),
-        author: getString(fields.author),
-        tags: toArray(fields.tags),
+        author: uniqueArray(toArray(fields.author)),
+        tags: uniqueArray(toArray(fields.tags)),
         status: getString(fields.status),
         cover: `/comics/${slug}/cover.jpg`,
         chapters: chaptersWithPages.map((ch: any) => ({

@@ -6,7 +6,6 @@ A simple personal comic collection app built with **Next.js**, designed to manua
 
 ## 🐞 Bug / Issue Saat Ini
 
-- ❗ duplicate tag ketika upload
 - ❗ Setelah menyimpan urutan gambar chapter, tampilan belum langsung berubah (perlu refresh)
 
 ---
