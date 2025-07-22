@@ -1,0 +1,32 @@
+{
+  "1": [
+    {
+      "id": "cmt_1",
+      "username": "Anon",
+      "text": "Seru banget komik ini!",
+      "timestamp": "2025-07-17 13:00:00"
+    }
+  ],
+  "2": [
+    {
+      "id": "cmt_2",
+      "username": "Guest123",
+      "text": "Chapter 2 lucu bgt",
+      "timestamp": "2025-07-17 14:30:00"
+    }
+  ],
+  "3": [
+    {
+      "id": "cmt_1753159863637",
+      "username": "Anon",
+      "text": "wah anj nya keren banget",
+      "timestamp": "2025-07-22 11:51:03"
+    },
+    {
+      "id": "cmt_1753159908752",
+      "username": "Anon",
+      "text": "testing 2",
+      "timestamp": "2025-07-22 11:51:48"
+    }
+  ]
+}

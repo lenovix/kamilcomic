@@ -18,7 +18,7 @@ export default function Header() {
       <div className=" mx-auto px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
         {/* Logo */}
         <Link href="/" className="text-xl font-bold text-blue-600">
-          📚 Kamil Comic v0.0.5
+          📚 Kamil Comic v0.0.6
         </Link>
 
         {/* Search */}

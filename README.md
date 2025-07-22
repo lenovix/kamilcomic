@@ -6,13 +6,13 @@ A simple personal comic collection app built with **Next.js**, designed to manua
 
 ## 🐞 Bug / Issue Saat Ini
 
+- ❗ belum ada opsi untuk edit komentar, dan menghapus komentar
 - ❗ Setelah menyimpan urutan gambar chapter, tampilan belum langsung berubah (perlu refresh)
 
 ---
 
 ## 🚧 Rencana Fitur Selanjutnya
 
-- add comment section in every comic
 - add rating in every chapter
 - 🔍 Pencarian dan filter lanjutan (tags, kategori, status)
 - 📝 Mode edit metadata komik

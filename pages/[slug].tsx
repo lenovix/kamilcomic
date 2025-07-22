@@ -14,6 +14,8 @@ import { useRouter } from "next/router";
 import comics from "../data/comics.json";
 import Link from "next/link";
 import Header from "../components/Header";
+import CommentSection from "@/components/CommentSection";
+
 dayjs.extend(relativeTime);
 
 
@@ -381,6 +383,7 @@ export default function ComicDetail() {
             })}
           </div>
         )}
+        <CommentSection slug={String(comic.slug)} />
       </main>
     </>
   );
