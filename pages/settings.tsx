@@ -25,6 +25,15 @@ export default function SettingsPage() {
     setLoading(false);
   };
 
+  const handleClearComment = async () => {
+    setLoading(true);
+    setMessage("");
+    const res = await fetch("/api/settings/clear-comments", { method: "POST" });
+    const data = await res.json();
+    setMessage(data.message || "Done");
+    setLoading(false);
+  };
+
   return (
     <>
       <Header />
@@ -46,6 +55,14 @@ export default function SettingsPage() {
             disabled={loading}
           >
             Delete Cache (Folder tmp_upload)
+          </button>
+
+          <button
+            onClick={handleClearComment}
+            className="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded shadow"
+            disabled={loading}
+          >
+            Clear Comment Data
           </button>
 
           {message && <p className="text-sm text-green-600 mt-2">{message}</p>}
