@@ -12,6 +12,7 @@ A simple personal comic collection app built with **Next.js**, designed to manua
 
 ## 🚧 Rencana Fitur Selanjutnya
 
+- add sinopsis section in every komik
 - add rating in every chapter
 - 🔍 Pencarian dan filter lanjutan (tags, kategori, status)
 - 📝 Mode edit metadata komik
