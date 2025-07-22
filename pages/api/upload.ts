@@ -96,7 +96,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         artists: toArray(fields.artist || fields.artists),
         groups: toArray(fields.groups),
         categories: toArray(fields.categories),
-        uploaded: getString(fields.uploaded),
+        uploaded: new Date().toLocaleString('sv-SE', { timeZone: 'Asia/Jakarta' }).replace('T', ' '),
         author: getString(fields.author),
         tags: toArray(fields.tags),
         status: getString(fields.status),
@@ -105,7 +105,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           number: ch.number,
           title: ch.title,
           language: ch.language,
-          uploadChapter: ch.uploadChapter || getString(fields.uploaded),
+          uploadChapter: new Date().toLocaleString('sv-SE', { timeZone: 'Asia/Jakarta' }).replace('T', ' '),
           pages: ch.pages || []
         })),
       };

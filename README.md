@@ -30,7 +30,6 @@ A simple personal comic collection app built with **Next.js**, designed to manua
 ## 🐞 Bug / Issue Saat Ini
 
 - ❗ duplicate tag ketika upload
-- ❗ 'waktu' upload nya tidak termasuk, hanya tanggal saja, jam nya tidak (komik dan chapter)
 - ❗ Setelah menyimpan urutan gambar chapter, tampilan belum langsung berubah (perlu refresh)
 - ❗ Error 500 jika file tidak lengkap atau field `chapters` tidak dikirim dengan benar
 - ❗ Tidak ada validasi tipe file & ukuran maksimum
