@@ -77,7 +77,7 @@ export default function CommentSection({ slug }: { slug: string }) {
 
   return (
     <div className="mt-10 border-t border-gray-300 pt-6">
-      <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+      <h3 className="text-lg font-semibold text-blue-700 mb-4 flex items-center gap-2">
         💬 Komentar
         <span className="text-sm text-gray-500">({comments.length})</span>
       </h3>
