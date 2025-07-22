@@ -1,10 +1,3 @@
-# Public: abaikan semua file dalam /public kecuali folder-nya
-/public/*
-!/public/.gitkeep
-
-# Abaikan file metadata
-/data/comics.json
-
 # dependencies
 /node_modules
 /.pnp
