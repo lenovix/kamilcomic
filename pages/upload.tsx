@@ -5,12 +5,21 @@ import { GetServerSideProps } from "next";
 import fs from "fs";
 import path from "path";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import Alert from "@/components/Alert";
 
 interface UploadComicPageProps {
   defaultSlug: number;
 }
 
 export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
+  const [alertData, setAlertData] = useState<{
+    title: string;
+    desc?: string;
+    type: "success" | "warning" | "error" | "onprogress";
+    progress?: number;
+  } | null>(null);
+  
+  const [uploadProgress, setUploadProgress] = useState(0);
   const router = useRouter();
 
   const [comicData, setComicData] = useState({
@@ -91,20 +100,39 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
     e.preventDefault();
 
     if (!comicData.title) {
-      alert("Judul komik wajib diisi");
+      setAlertData({
+        title: "Data Tidak Lengkap",
+        desc: "Judul komik harus diisi sebelum melanjutkan.",
+        type: "error",
+      });
       return;
     }
+
     if (!chapters.length || !chapters[0].title) {
-      alert("Minimal 1 chapter dengan judul wajib diisi");
+      setAlertData({
+        title: "Chapter Belum Lengkap",
+        desc: "Setidaknya harus ada satu chapter yang memiliki judul.",
+        type: "error",
+      });
       return;
     }
+
     for (const ch of chapters) {
       if (!ch.number || !ch.title || !ch.language) {
-        alert("Semua chapter wajib diisi nomor, judul, dan bahasa!");
+        setAlertData({
+          title: "Data Chapter Tidak Lengkap",
+          desc: "Setiap chapter wajib memiliki nomor, judul, dan bahasa.",
+          type: "error",
+        });
         return;
       }
+
       if (!ch.files || ch.files.length === 0) {
-        alert(`Chapter ${ch.number} belum ada file halaman!`);
+        setAlertData({
+          title: "File Halaman Belum Ada",
+          desc: `Chapter ${ch.number} belum memiliki file halaman.`,
+          type: "error",
+        });
         return;
       }
     }
@@ -135,22 +163,62 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
       }
     });
     try {
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-      if (res.ok) {
-        alert("Upload berhasil!");
-        router.push("/");
-      } else {
-        const err = await res.json();
-        console.error("Upload error:", err);
-        alert(`Upload gagal: ${err.message}`);
-      }
+      setAlertData({ title: "Uploading...", type: "onprogress", progress: 0 });
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", "/api/upload");
+
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const percent = Math.round((event.loaded / event.total) * 100);
+          setUploadProgress(percent);
+          setAlertData((prev) =>
+            prev ? { ...prev, progress: percent } : null
+          );
+        }
+      };
+
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          setAlertData({
+            title: "Upload Berhasil",
+            desc: "Data komik berhasil diunggah.",
+            type: "success",
+          });
+          setTimeout(() => {
+            router.push("/");
+          }, 3000);
+        } else {
+          let errMessage = "Terjadi kesalahan saat memproses upload.";
+          try {
+            const err = JSON.parse(xhr.responseText);
+            errMessage = err.message || errMessage;
+          } catch {}
+          setAlertData({
+            title: "Gagal Mengunggah",
+            desc: errMessage,
+            type: "error",
+          });
+        }
+      };
+
+      xhr.onerror = () => {
+        setAlertData({
+          title: "Kesalahan Jaringan",
+          desc: "Tidak dapat terhubung ke server. Periksa koneksi dan coba lagi.",
+          type: "error",
+        });
+      };
+
+      xhr.send(formData);
     } catch (error) {
       console.error("Network error:", error);
-      alert("Terjadi kesalahan jaringan");
+      setAlertData({
+        title: "Kesalahan Jaringan",
+        desc: "Tidak dapat terhubung ke server. Periksa koneksi dan coba lagi.",
+        type: "error",
+      });
     }
+
   };
 
   const openPreview = (index: number) => {
@@ -212,7 +280,6 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
                   name="title"
                   placeholder="Title"
                   onChange={handleComicChange}
-                  required
                   className="border p-2 rounded"
                 />
                 <input
@@ -400,6 +467,17 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
               </div>
             </div>
           )}
+        {alertData && (
+          <div className="mb-4">
+            <Alert
+              title={alertData.title}
+              desc={alertData.desc}
+              type={alertData.type}
+              progress={alertData.progress}
+              onClose={() => setAlertData(null)}
+            />
+          </div>
+        )}
       </main>
     </>
   );

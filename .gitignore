@@ -1,5 +1,7 @@
 /data/comics.json
 /data/comment-history.json
+/public/comics/
+/public/tmp_upload
 
 # dependencies
 /node_modules
