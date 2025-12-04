@@ -1,3 +1,6 @@
+/data/comics.json
+/data/comment-history.json
+
 # dependencies
 /node_modules
 /.pnp
