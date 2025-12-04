@@ -7,12 +7,14 @@ import path from "path";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import Alert from "@/components/Alert";
 import DialogBox from "@/components/DialogBox";
+import DialogBoxCover from "@/components/DialogBoxCover";
 
 interface UploadComicPageProps {
   defaultSlug: number;
 }
 
 export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
+  const [coverDialogOpen, setCoverDialogOpen] = useState(false);
   const [alertData, setAlertData] = useState<{
     title: string;
     desc?: string;
@@ -53,7 +55,6 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
       onConfirm: handleUpload, // lanjut proses upload
       onCancel: () => setDialogOpen(false),
     });
-    
   };
 
   const [coverFile, setCoverFile] = useState<File | null>(null);
@@ -273,7 +274,6 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
     }
   };
 
-
   const openPreview = (index: number) => {
     setPreviewChapterIndex(index);
   };
@@ -312,59 +312,73 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
           />
         )}
 
-        <form onSubmit={handleOpenDialog} className="space-y-6">
-          {/* Cover + Basic Info */}
+        <form onSubmit={handleOpenDialog} className="space-y-6 overflow-hidden">
+          {/* Container Layout 2 kolom */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Cover */}
-            <div className="flex flex-col items-center space-y-3">
-              <label className="block font-medium">Cover Image</label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleCoverUpload}
-                className="border p-2 rounded w-full"
-              />
-              {comicData.cover && (
-                <img
-                  src={comicData.cover}
-                  alt="Preview Cover"
-                  className="mt-2 w-full max-w-xs rounded shadow"
-                />
-              )}
+            {/* DETAIL (kiri) */}
+            <div className="space-y-4">
+              <h2 className="font-semibold text-lg">Detail</h2>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[
+                  { name: "title", placeholder: "Title" },
+                  { name: "parodies", placeholder: "Parodies" },
+                  { name: "characters", placeholder: "Characters" },
+                  { name: "tags", placeholder: "Tags" },
+                  { name: "artist", placeholder: "Artist" },
+                  { name: "groups", placeholder: "Groups" },
+                  { name: "author", placeholder: "Author" },
+                  { name: "categories", placeholder: "Categories" },
+                ].map((field) => (
+                  <input
+                    key={field.name}
+                    name={field.name}
+                    placeholder={field.placeholder}
+                    value={(comicData as any)[field.name]}
+                    onChange={handleComicChange}
+                    className="border p-2 rounded w-full"
+                  />
+                ))}
+              </div>
             </div>
 
-            {/* Form Detail */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[
-                { name: "title", placeholder: "Title" },
-                { name: "parodies", placeholder: "Parodies" },
-                { name: "characters", placeholder: "Characters" },
-                { name: "tags", placeholder: "Tags" },
-                { name: "artist", placeholder: "Artist" },
-                { name: "groups", placeholder: "Groups" },
-                { name: "author", placeholder: "Author" },
-                { name: "categories", placeholder: "Categories" },
-              ].map((field) => (
-                <input
-                  key={field.name}
-                  name={field.name}
-                  placeholder={field.placeholder}
-                  value={(comicData as any)[field.name]}
-                  onChange={handleComicChange}
-                  className="border p-2 rounded w-full"
-                />
-              ))}
+            {/* COVER (kanan) - memanjang ke bawah */}
+            <div className="flex flex-col items-center space-y-3">
+              <div className="flex justify-between w-full items-center">
+                <label className="block font-medium">Cover Image</label>
+              </div>
+
+              <div
+                className="
+    w-full max-h-64 aspect-[2/3]
+    border-2 border-dashed border-gray-300 rounded-xl 
+    bg-gray-50 flex items-center justify-center cursor-pointer 
+    hover:bg-gray-100 transition
+  "
+                onClick={() => setCoverDialogOpen(true)}
+              >
+                {comicData.cover ? (
+                  <img
+                    src={comicData.cover}
+                    className="object-contain w-full h-full rounded-xl"
+                  />
+                ) : (
+                  <p className="text-gray-500">
+                    Klik di sini untuk upload cover
+                  </p>
+                )}
+              </div>
             </div>
           </div>
 
-          {/* Chapters */}
+          {/* CHAPTERS (full width, bawah) */}
           <div className="space-y-4">
             <h2 className="text-lg font-semibold">📄 Chapters</h2>
 
             {chapters.map((ch, index) => (
               <div
                 key={index}
-                className="border border-gray-200 rounded-lg p-3 relative "
+                className="border border-gray-200 rounded-lg p-3 relative"
               >
                 {/* Input nomor, title, language */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-2 mb-2">
@@ -398,7 +412,6 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
                   />
                 </div>
 
-                {/* File info & preview */}
                 {ch.files?.length > 0 && (
                   <div className="flex items-center justify-between mt-1">
                     <p className="text-sm text-gray-500">
@@ -414,7 +427,6 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
                   </div>
                 )}
 
-                {/* Tombol hapus */}
                 {index > 0 && (
                   <button
                     type="button"
@@ -468,6 +480,17 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
           desc={dialogData.desc}
           onConfirm={dialogData.onConfirm}
           onCancel={dialogData.onCancel}
+        />
+      }
+      {
+        <DialogBoxCover
+          open={coverDialogOpen}
+          onClose={() => setCoverDialogOpen(false)}
+          onSave={(file) => {
+            setCoverDialogOpen(false);
+            setCoverFile(file);
+            setComicData({ ...comicData, cover: URL.createObjectURL(file) });
+          }}
         />
       }
 
