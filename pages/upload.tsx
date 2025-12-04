@@ -18,7 +18,7 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
     type: "success" | "warning" | "error" | "onprogress";
     progress?: number;
   } | null>(null);
-  
+
   const [uploadProgress, setUploadProgress] = useState(0);
   const router = useRouter();
 
@@ -227,7 +227,6 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
         type: "error",
       });
     }
-
   };
 
   const openPreview = (index: number) => {
@@ -252,155 +251,151 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
   return (
     <>
       <Header />
-      <main className="max-w-3xl mx-auto p-6">
-        <h1 className="text-2xl font-bold mb-4">📤 Upload Comic</h1>
+      <main className="max-w-4xl mx-auto p-6 space-y-6">
+        <h1 className="text-2xl font-bold mb-4">
+          📤 Upload Comic #{comicData.slug}
+        </h1>
+
+        {/* Alert */}
+        {alertData && (
+          <Alert
+            title={alertData.title}
+            desc={alertData.desc}
+            type={alertData.type}
+            progress={alertData.progress}
+            onClose={() => setAlertData(null)}
+          />
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-6">
-          <section className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* KIRI - Cover dan Preview */}
-              <div className="space-y-3">
-                <label className="block text-sm font-medium">Cover Image</label>
+          {/* Cover + Basic Info */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Cover */}
+            <div className="flex flex-col items-center space-y-3">
+              <label className="block font-medium">Cover Image</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleCoverUpload}
+                className="border p-2 rounded w-full"
+              />
+              {comicData.cover && (
+                <img
+                  src={comicData.cover}
+                  alt="Preview Cover"
+                  className="mt-2 w-full max-w-xs rounded shadow"
+                />
+              )}
+            </div>
+
+            {/* Form Detail */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                { name: "title", placeholder: "Title" },
+                { name: "parodies", placeholder: "Parodies" },
+                { name: "characters", placeholder: "Characters" },
+                { name: "tags", placeholder: "Tags" },
+                { name: "artist", placeholder: "Artist" },
+                { name: "groups", placeholder: "Groups" },
+                { name: "author", placeholder: "Author" },
+                { name: "categories", placeholder: "Categories" },
+              ].map((field) => (
                 <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleCoverUpload}
+                  key={field.name}
+                  name={field.name}
+                  placeholder={field.placeholder}
+                  value={(comicData as any)[field.name]}
+                  onChange={handleComicChange}
                   className="border p-2 rounded w-full"
                 />
-                {comicData.cover && (
-                  <img
-                    src={comicData.cover}
-                    alt="Preview Cover"
-                    className="mt-2 w-full max-w-xs rounded shadow"
-                  />
-                )}
-              </div>
-
-              {/* KANAN - Form Detail Komik */}
-              <div className="grid grid-cols-1 gap-4">
-                <input
-                  name="slug"
-                  value={comicData.slug}
-                  onChange={handleComicChange}
-                  required
-                  readOnly
-                  className="border p-2 rounded"
-                />
-                <input
-                  name="title"
-                  placeholder="Title"
-                  onChange={handleComicChange}
-                  className="border p-2 rounded"
-                />
-                <input
-                  name="parodies"
-                  placeholder="Parodies (pisah dengan koma)"
-                  onChange={handleComicChange}
-                  className="border p-2 rounded"
-                />
-                <input
-                  name="characters"
-                  placeholder="Characters (pisah dengan koma)"
-                  onChange={handleComicChange}
-                  className="border p-2 rounded"
-                />
-                <input
-                  name="tags"
-                  placeholder="Tags (pisah dengan koma)"
-                  onChange={handleComicChange}
-                  className="border p-2 rounded"
-                />
-                <input
-                  name="artist"
-                  placeholder="Artist (pisah dengan koma)"
-                  onChange={handleComicChange}
-                  className="border p-2 rounded"
-                />
-                <input
-                  name="groups"
-                  placeholder="Groups (pisah dengan koma)"
-                  onChange={handleComicChange}
-                  className="border p-2 rounded"
-                />
-                <input
-                  name="author"
-                  placeholder="Author (pisah dengan koma)"
-                  onChange={handleComicChange}
-                  className="border p-2 rounded"
-                />
-                <input
-                  name="categories"
-                  placeholder="Categories (pisah dengan koma)"
-                  onChange={handleComicChange}
-                  className="border p-2 rounded"
-                />
-              </div>
+              ))}
             </div>
-          </section>
+          </div>
 
-          <section>
-            <h2 className="text-lg font-semibold mb-2">📄 Chapters</h2>
+          {/* Chapters */}
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold">📄 Chapters</h2>
+
             {chapters.map((ch, index) => (
               <div
                 key={index}
-                className="space-y-2 mb-4 border p-3 rounded relative"
+                className="border border-gray-200 rounded-lg p-3 relative "
               >
-                <div className="grid grid-cols-3 gap-4">
+                {/* Input nomor, title, language */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-2 mb-2">
                   <input
                     name="number"
                     placeholder="No"
                     value={ch.number}
                     onChange={(e) => handleChapterChange(index, e)}
-                    className="border p-2 rounded"
+                    className="border p-2 rounded w-full focus:ring-1 focus:ring-blue-400"
                   />
                   <input
                     name="title"
                     placeholder="Title"
                     value={ch.title}
                     onChange={(e) => handleChapterChange(index, e)}
-                    className="border p-2 rounded"
+                    className="border p-2 rounded w-full focus:ring-1 focus:ring-blue-400"
                   />
                   <input
                     name="language"
                     placeholder="Language"
                     value={ch.language}
                     onChange={(e) => handleChapterChange(index, e)}
-                    className="border p-2 rounded"
+                    className="border p-2 rounded w-full focus:ring-1 focus:ring-blue-400"
+                  />
+                  <input
+                    type="file"
+                    multiple
+                    accept=".zip,.rar,image/*"
+                    onChange={(e) => handleChapterFile(index, e.target.files)}
+                    className="border p-2 rounded w-full"
                   />
                 </div>
-                <input
-                  type="file"
-                  multiple
-                  accept=".zip,.rar,image/*"
-                  onChange={(e) => handleChapterFile(index, e.target.files)}
-                  className="w-full border p-2 rounded"
-                />
-                {ch.files && (
-                  <div className="flex items-center space-x-2">
+
+                {/* File info & preview */}
+                {ch.files?.length > 0 && (
+                  <div className="flex items-center justify-between mt-1">
                     <p className="text-sm text-gray-500">
                       {ch.files.length} file dipilih
                     </p>
-                    {ch.files.length > 0 && (
-                      <button
-                        type="button"
-                        onClick={() => openPreview(index)}
-                        className="text-sm text-blue-600 hover underline"
-                      >
-                        Preview Gambar
-                      </button>
-                    )}
+                    <button
+                      type="button"
+                      onClick={() => openPreview(index)}
+                      className="text-sm text-blue-600 hover:underline"
+                    >
+                      Preview
+                    </button>
                   </div>
                 )}
+
+                {/* Tombol hapus */}
                 {index > 0 && (
                   <button
                     type="button"
                     onClick={() => removeChapter(index)}
-                    className="absolute top-1 right-2 text-red-500 hover:text-red-700 text-sm"
+                    className="absolute top-2 right-2 p-1 rounded hover:bg-red-100 text-red-600"
+                    title="Hapus Chapter"
                   >
-                    Hapus
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
                   </button>
                 )}
               </div>
             ))}
+
             <button
               type="button"
               onClick={addChapter}
@@ -408,86 +403,76 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
             >
               + Tambah Chapter
             </button>
-          </section>
+          </div>
 
+          {/* Submit */}
           <button
             type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+            className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
           >
             Simpan Komik
           </button>
         </form>
+      </main>
 
-        {/* Modal untuk Preview Gambar dengan Drag-and-Drop */}
-        {previewChapterIndex !== null &&
-          chapters[previewChapterIndex].files.length > 0 && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-white p-6 rounded-lg max-w-3xl w-full max-h-[80vh] overflow-y-auto">
-                <h2 className="text-lg font-semibold mb-4">
-                  Preview Chapter {chapters[previewChapterIndex].number}
-                </h2>
-                <DragDropContext onDragEnd={handleDragEnd}>
-                  <Droppable droppableId="chapter-images">
-                    {(provided) => (
-                      <div
-                        className="grid grid-cols-2 gap-4"
-                        {...provided.droppableProps}
-                        ref={provided.innerRef}
-                      >
-                        {chapters[previewChapterIndex].files.map(
-                          (file, idx) =>
-                            file.type.startsWith("image/") && (
-                              <Draggable
-                                key={idx}
-                                draggableId={`image-${idx}`}
-                                index={idx}
-                              >
-                                {(provided) => (
-                                  <div
-                                    ref={provided.innerRef}
-                                    {...provided.draggableProps}
-                                    {...provided.dragHandleProps}
-                                    className="relative"
-                                  >
-                                    <img
-                                      src={URL.createObjectURL(file)}
-                                      alt={`Page ${idx + 1}`}
-                                      className="w-full h-auto rounded shadow cursor-move"
-                                    />
-                                    <span className="absolute top-0 left-0 bg-gray-800 text-white text-xs px-2 py-1 rounded">
-                                      Page {idx + 1}
-                                    </span>
-                                  </div>
-                                )}
-                              </Draggable>
-                            )
-                        )}
-                        {provided.placeholder}
-                      </div>
-                    )}
-                  </Droppable>
-                </DragDropContext>
-                <button
-                  onClick={closePreview}
-                  className="mt-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition"
-                >
-                  Tutup
-                </button>
-              </div>
+      {/* Modal untuk Preview Gambar dengan Drag-and-Drop */}
+      {previewChapterIndex !== null &&
+        chapters[previewChapterIndex].files.length > 0 && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg max-w-3xl w-full max-h-[80vh] overflow-y-auto">
+              <h2 className="text-lg font-semibold mb-4">
+                Preview Chapter {chapters[previewChapterIndex].number}
+              </h2>
+              <DragDropContext onDragEnd={handleDragEnd}>
+                <Droppable droppableId="chapter-images">
+                  {(provided) => (
+                    <div
+                      className="grid grid-cols-2 gap-4"
+                      {...provided.droppableProps}
+                      ref={provided.innerRef}
+                    >
+                      {chapters[previewChapterIndex].files.map(
+                        (file, idx) =>
+                          file.type.startsWith("image/") && (
+                            <Draggable
+                              key={idx}
+                              draggableId={`image-${idx}`}
+                              index={idx}
+                            >
+                              {(provided) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  className="relative"
+                                >
+                                  <img
+                                    src={URL.createObjectURL(file)}
+                                    alt={`Page ${idx + 1}`}
+                                    className="w-full h-auto rounded shadow cursor-move"
+                                  />
+                                  <span className="absolute top-0 left-0 bg-gray-800 text-white text-xs px-2 py-1 rounded">
+                                    Page {idx + 1}
+                                  </span>
+                                </div>
+                              )}
+                            </Draggable>
+                          )
+                      )}
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </DragDropContext>
+              <button
+                onClick={closePreview}
+                className="mt-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition"
+              >
+                Tutup
+              </button>
             </div>
-          )}
-        {alertData && (
-          <div className="mb-4">
-            <Alert
-              title={alertData.title}
-              desc={alertData.desc}
-              type={alertData.type}
-              progress={alertData.progress}
-              onClose={() => setAlertData(null)}
-            />
           </div>
         )}
-      </main>
     </>
   );
 }
