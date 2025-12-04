@@ -6,6 +6,7 @@ import fs from "fs";
 import path from "path";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import Alert from "@/components/Alert";
+import DialogBox from "@/components/DialogBox";
 
 interface UploadComicPageProps {
   defaultSlug: number;
@@ -36,6 +37,24 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
     status: "Ongoing",
     cover: "",
   });
+
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogData, setDialogData] = useState({
+    title: "",
+    desc: "",
+    onConfirm: () => {},
+    onCancel: () => {},
+  });
+
+  const handleAskUpload = () => {
+    setDialogData({
+      title: "Upload Komik?",
+      desc: "Pastikan data sudah benar sebelum melanjutkan.",
+      onConfirm: handleUpload, // lanjut proses upload
+      onCancel: () => setDialogOpen(false),
+    });
+    
+  };
 
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [chapters, setChapters] = useState([
@@ -96,16 +115,14 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
     setChapters(renumbered);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const validateBeforeUpload = () => {
     if (!comicData.title) {
       setAlertData({
         title: "Data Tidak Lengkap",
         desc: "Judul komik harus diisi sebelum melanjutkan.",
         type: "error",
       });
-      return;
+      return false;
     }
 
     if (!comicData.cover) {
@@ -114,7 +131,7 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
         desc: "Tolong upload gambar cover komik sebelum melanjutkan.",
         type: "error",
       });
-      return;
+      return false;
     }
 
     if (!chapters.length || !chapters[0].title) {
@@ -123,7 +140,7 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
         desc: "Setidaknya harus ada satu chapter yang memiliki judul.",
         type: "error",
       });
-      return;
+      return false;
     }
 
     for (const ch of chapters) {
@@ -133,7 +150,7 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
           desc: "Setiap chapter wajib memiliki nomor, judul, dan bahasa.",
           type: "error",
         });
-        return;
+        return false;
       }
 
       if (!ch.files || ch.files.length === 0) {
@@ -142,17 +159,39 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
           desc: `Chapter ${ch.number} belum memiliki file halaman.`,
           type: "error",
         });
-        return;
+        return false;
       }
     }
+
+    return true;
+  };
+
+  const handleOpenDialog = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+
+    const isValid = validateBeforeUpload();
+    if (!isValid) return;
+
+    setDialogData({
+      title: "Upload Komik?",
+      desc: "Pastikan semua data sudah benar sebelum melanjutkan.",
+      onConfirm: handleUpload,
+      onCancel: () => setDialogOpen(false),
+    });
+
+    setDialogOpen(true);
+  };
+
+  const handleUpload = async () => {
+    setDialogOpen(false); // tutup dialog
 
     const formData = new FormData();
     Object.entries(comicData).forEach(([key, value]) => {
       formData.append(key, value);
     });
-    if (coverFile) {
-      formData.append("cover", coverFile);
-    }
+
+    if (coverFile) formData.append("cover", coverFile);
+
     formData.append(
       "chapters",
       JSON.stringify(
@@ -164,6 +203,7 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
         }))
       )
     );
+
     chapters.forEach((ch) => {
       if (ch.files && ch.files.length > 0) {
         ch.files.forEach((file) => {
@@ -171,8 +211,10 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
         });
       }
     });
+
     try {
       setAlertData({ title: "Uploading...", type: "onprogress", progress: 0 });
+
       const xhr = new XMLHttpRequest();
       xhr.open("POST", "/api/upload");
 
@@ -193,6 +235,7 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
             desc: "Data komik berhasil diunggah.",
             type: "success",
           });
+
           setTimeout(() => {
             router.push("/");
           }, 3000);
@@ -202,6 +245,7 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
             const err = JSON.parse(xhr.responseText);
             errMessage = err.message || errMessage;
           } catch {}
+
           setAlertData({
             title: "Gagal Mengunggah",
             desc: errMessage,
@@ -228,6 +272,7 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
       });
     }
   };
+
 
   const openPreview = (index: number) => {
     setPreviewChapterIndex(index);
@@ -267,7 +312,7 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
           />
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleOpenDialog} className="space-y-6">
           {/* Cover + Basic Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Cover */}
@@ -407,6 +452,7 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
 
           {/* Submit */}
           <button
+            onClick={handleOpenDialog}
             type="submit"
             className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
           >
@@ -414,6 +460,16 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
           </button>
         </form>
       </main>
+
+      {
+        <DialogBox
+          open={dialogOpen}
+          title={dialogData.title}
+          desc={dialogData.desc}
+          onConfirm={dialogData.onConfirm}
+          onCancel={dialogData.onCancel}
+        />
+      }
 
       {/* Modal untuk Preview Gambar dengan Drag-and-Drop */}
       {previewChapterIndex !== null &&
