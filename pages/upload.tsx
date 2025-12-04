@@ -314,9 +314,7 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* DETAIL (kiri) */}
             <div className="space-y-4">
-              <h2 className="font-semibold text-lg">Detail</h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid gap-4">
                 {[
                   { name: "title", placeholder: "Title" },
                   { name: "parodies", placeholder: "Parodies" },
@@ -342,11 +340,18 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
             {/* COVER (kanan) - memanjang ke bawah */}
             <div className="flex flex-col items-center space-y-3">
               <div className="flex justify-between w-full items-center">
-                <label className="block font-medium">Cover Image</label>
+                {/* Submit */}
+                <button
+                  onClick={handleOpenDialog}
+                  type="submit"
+                  className="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700 transition"
+                >
+                  Simpan Komik
+                </button>
               </div>
 
               <div
-                className=" w-full max-h-64 aspect-[2/3] border-2 border-gray-300 rounded-xl bg-gray-50 flex items-center justify-center cursor-pointer hover:bg-gray-100 transition relative"
+                className=" w-full h-99 aspect-[2/3] border-2 border-gray-300 rounded-xl bg-gray-50 flex items-center justify-center cursor-pointer hover:bg-gray-100 transition relative"
                 onClick={() => setCoverDialogOpen(true)}
               >
                 {comicData.cover ? (
@@ -466,15 +471,6 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
               + Tambah Chapter
             </button>
           </div>
-
-          {/* Submit */}
-          <button
-            onClick={handleOpenDialog}
-            type="submit"
-            className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
-          >
-            Simpan Komik
-          </button>
         </form>
       </main>
 
