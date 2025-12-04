@@ -119,8 +119,7 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
   const validateBeforeUpload = () => {
     if (!comicData.title) {
       setAlertData({
-        title: "Data Tidak Lengkap",
-        desc: "Judul komik harus diisi sebelum melanjutkan.",
+        title: "Judul Komik Kosong",
         type: "error",
       });
       return false;
@@ -128,8 +127,7 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
 
     if (!comicData.cover) {
       setAlertData({
-        title: "Data Tidak Lengkap",
-        desc: "Tolong upload gambar cover komik sebelum melanjutkan.",
+        title: "Cover Belum Diunggah",
         type: "error",
       });
       return false;
@@ -137,8 +135,7 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
 
     if (!chapters.length || !chapters[0].title) {
       setAlertData({
-        title: "Chapter Belum Lengkap",
-        desc: "Setidaknya harus ada satu chapter yang memiliki judul.",
+        title: "Judul Chapter Kosong",
         type: "error",
       });
       return false;
@@ -156,8 +153,7 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
 
       if (!ch.files || ch.files.length === 0) {
         setAlertData({
-          title: "File Halaman Belum Ada",
-          desc: `Chapter ${ch.number} belum memiliki file halaman.`,
+          title: `File Chapter ${ch.number} Kosong`,
           type: "error",
         });
         return false;
@@ -180,6 +176,7 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
       onCancel: () => setDialogOpen(false),
     });
 
+    setAlertData(null);
     setDialogOpen(true);
   };
 
@@ -349,19 +346,27 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
               </div>
 
               <div
-                className="
-    w-full max-h-64 aspect-[2/3]
-    border-2 border-dashed border-gray-300 rounded-xl 
-    bg-gray-50 flex items-center justify-center cursor-pointer 
-    hover:bg-gray-100 transition
-  "
+                className=" w-full max-h-64 aspect-[2/3] border-2 border-gray-300 rounded-xl bg-gray-50 flex items-center justify-center cursor-pointer hover:bg-gray-100 transition relative"
                 onClick={() => setCoverDialogOpen(true)}
               >
                 {comicData.cover ? (
-                  <img
-                    src={comicData.cover}
-                    className="object-contain w-full h-full rounded-xl"
-                  />
+                  <>
+                    {/* Tombol Delete */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation(); // supaya tidak membuka dialog upload
+                        setComicData({ ...comicData, cover: "" });
+                      }}
+                      className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-md shadow hover:bg-red-600 z-20 "
+                    >
+                      Delete
+                    </button>
+
+                    <img
+                      src={comicData.cover}
+                      className="object-cover w-full h-full rounded-xl z-10"
+                    />
+                  </>
                 ) : (
                   <p className="text-gray-500">
                     Klik di sini untuk upload cover
