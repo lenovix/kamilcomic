@@ -108,6 +108,15 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
       return;
     }
 
+    if (!comicData.cover) {
+      setAlertData({
+        title: "Data Tidak Lengkap",
+        desc: "Tolong upload gambar cover komik sebelum melanjutkan.",
+        type: "error",
+      });
+      return;
+    }
+
     if (!chapters.length || !chapters[0].title) {
       setAlertData({
         title: "Chapter Belum Lengkap",
