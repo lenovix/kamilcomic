@@ -1,6 +1,8 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import Head from "next/head";
+import { ThemeProvider } from "next-themes";
+import Footer from "@/components/Footer";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -8,7 +10,17 @@ export default function App({ Component, pageProps }: AppProps) {
       <Head>
         <title>Komify</title>
       </Head>
-      <Component {...pageProps} />
+
+      <ThemeProvider
+        attribute="data-mode"
+        defaultTheme="dark"
+        enableSystem={false}
+        disableTransitionOnChange
+        themes={["light", "dark"]}
+      >
+        <Component {...pageProps} />
+        <Footer />
+      </ThemeProvider>
     </>
   );
 }

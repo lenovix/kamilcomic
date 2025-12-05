@@ -8,14 +8,20 @@ import Head from "next/head";
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isClient, setIsClient] = useState(false);
-  useEffect(() => { setIsClient(true); }, []);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Komik terbaru (berdasarkan tanggal uploaded, urut descending)
   const newComics = useMemo(() => {
     return [...comics]
       .sort((a, b) => {
-        const uploadedA = Array.isArray(a.uploaded) ? a.uploaded[0] : a.uploaded;
-        const uploadedB = Array.isArray(b.uploaded) ? b.uploaded[0] : b.uploaded;
+        const uploadedA = Array.isArray(a.uploaded)
+          ? a.uploaded[0]
+          : a.uploaded;
+        const uploadedB = Array.isArray(b.uploaded)
+          ? b.uploaded[0]
+          : b.uploaded;
         const dateA = new Date(uploadedA || 0).getTime();
         const dateB = new Date(uploadedB || 0).getTime();
         return dateB - dateA;
@@ -33,7 +39,9 @@ export default function Home() {
           comicTitle: comic.title,
           comicSlug: comic.slug,
           comicCover: comic.cover,
-          uploaded: Array.isArray(comic.uploaded) ? comic.uploaded[0] : comic.uploaded,
+          uploaded: Array.isArray(comic.uploaded)
+            ? comic.uploaded[0]
+            : comic.uploaded,
         });
       });
     });
@@ -50,7 +58,12 @@ export default function Home() {
   // Filter comics berdasarkan judul (case-insensitive)
   const filteredComics = useMemo(() => {
     const filtered = comics.filter((comic) => {
-      const title = typeof comic.title === 'string' ? comic.title : Array.isArray(comic.title) ? comic.title[0] : '';
+      const title =
+        typeof comic.title === "string"
+          ? comic.title
+          : Array.isArray(comic.title)
+          ? comic.title[0]
+          : "";
       return title.toLowerCase().includes(searchTerm.toLowerCase());
     });
     return filtered.sort((a, b) => {
