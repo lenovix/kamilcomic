@@ -8,6 +8,7 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import Alert from "@/components/Alert";
 import DialogBox from "@/components/DialogBox";
 import DialogBoxCover from "@/components/DialogBoxCover";
+import Head from "next/head";
 
 interface UploadComicPageProps {
   defaultSlug: number;
@@ -292,6 +293,9 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
 
   return (
     <>
+      <Head>
+        <title>Komify :: Upload Comic</title>
+      </Head>
       <Header />
       <main className="max-w-4xl mx-auto p-6 space-y-6">
         <h1 className="text-2xl font-bold mb-4">
@@ -309,11 +313,15 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
           />
         )}
 
+        {/* FORM */}
         <form onSubmit={handleOpenDialog} className="space-y-6 overflow-hidden">
-          {/* Container Layout 2 kolom */}
+          {/* ========================== */}
+          {/* DETAIL + COVER SECTION     */}
+          {/* ========================== */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* DETAIL (kiri) */}
-            <div className="space-y-4">
+            <div className="bg-white/5 border border-white/10 rounded-xl p-4 shadow-sm backdrop-blur-sm space-y-4">
+              <h2 className="font-semibold text-gray-200">📑 Detail</h2>
               <div className="grid gap-4">
                 {[
                   { name: "title", placeholder: "Title" },
@@ -331,38 +339,37 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
                     placeholder={field.placeholder}
                     value={(comicData as any)[field.name]}
                     onChange={handleComicChange}
-                    className="border p-2 rounded w-full"
+                    className="border p-2 rounded w-full bg-white/10 text-white placeholder-gray-300"
                   />
                 ))}
               </div>
             </div>
 
-            {/* COVER (kanan) - memanjang ke bawah */}
-            <div className="flex flex-col items-center space-y-3">
-              <div className="flex justify-between w-full items-center">
-                {/* Submit */}
-                <button
-                  onClick={handleOpenDialog}
-                  type="submit"
-                  className="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700 transition"
-                >
-                  Simpan Komik
-                </button>
-              </div>
+            {/* COVER + BUTTON (kanan) */}
+            <div className="bg-white/5 border border-white/10 rounded-xl p-4 shadow-sm backdrop-blur-sm space-y-4 flex flex-col">
+              {/* Submit Button */}
+              <button
+                onClick={handleOpenDialog}
+                type="submit"
+                className="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700 transition"
+              >
+                Simpan Komik
+              </button>
 
+              {/* BOX COVER */}
               <div
-                className=" w-full h-99 aspect-[2/3] border-2 border-gray-300 rounded-xl bg-gray-50 flex items-center justify-center cursor-pointer hover:bg-gray-100 transition relative"
+                className="w-full aspect-[2/3] border-2 border-gray-300 rounded-xl bg-gray-50 flex items-center justify-center cursor-pointer hover:bg-gray-100 transition relative"
                 onClick={() => setCoverDialogOpen(true)}
               >
                 {comicData.cover ? (
                   <>
-                    {/* Tombol Delete */}
+                    {/* DELETE BUTTON */}
                     <button
                       onClick={(e) => {
-                        e.stopPropagation(); // supaya tidak membuka dialog upload
+                        e.stopPropagation();
                         setComicData({ ...comicData, cover: "" });
                       }}
-                      className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-md shadow hover:bg-red-600 z-20 "
+                      className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-md shadow hover:bg-red-600 z-20"
                     >
                       Delete
                     </button>
@@ -373,7 +380,7 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
                     />
                   </>
                 ) : (
-                  <p className="text-gray-500">
+                  <p className="text-gray-500 text-sm">
                     Klik di sini untuk upload cover
                   </p>
                 )}
@@ -381,56 +388,57 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
             </div>
           </div>
 
-          {/* CHAPTERS (full width, bawah) */}
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold">📄 Chapters</h2>
+          {/* ========================== */}
+          {/* CHAPTER SECTION (BOTTOM)   */}
+          {/* ========================== */}
+          <div className="bg-white/5 border border-white/10 rounded-xl p-4 shadow-sm backdrop-blur-sm space-y-4">
+            <h2 className="text-lg font-semibold text-gray-200">📄 Chapters</h2>
 
             {chapters.map((ch, index) => (
               <div
                 key={index}
-                className="border border-gray-200 rounded-lg p-3 relative"
+                className="border border-gray-300 rounded-lg p-3 relative bg-white/10"
               >
-                {/* Input nomor, title, language */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-2 mb-2">
                   <input
                     name="number"
                     placeholder="No"
                     value={ch.number}
                     onChange={(e) => handleChapterChange(index, e)}
-                    className="border p-2 rounded w-full focus:ring-1 focus:ring-blue-400"
+                    className="border p-2 rounded w-full bg-white/20 text-white placeholder-gray-300"
                   />
                   <input
                     name="title"
                     placeholder="Title"
                     value={ch.title}
                     onChange={(e) => handleChapterChange(index, e)}
-                    className="border p-2 rounded w-full focus:ring-1 focus:ring-blue-400"
+                    className="border p-2 rounded w-full bg-white/20 text-white placeholder-gray-300"
                   />
                   <input
                     name="language"
                     placeholder="Language"
                     value={ch.language}
                     onChange={(e) => handleChapterChange(index, e)}
-                    className="border p-2 rounded w-full focus:ring-1 focus:ring-blue-400"
+                    className="border p-2 rounded w-full bg-white/20 text-white placeholder-gray-300"
                   />
                   <input
                     type="file"
                     multiple
                     accept=".zip,.rar,image/*"
                     onChange={(e) => handleChapterFile(index, e.target.files)}
-                    className="border p-2 rounded w-full"
+                    className="border p-2 rounded w-full bg-white/20 text-white"
                   />
                 </div>
 
                 {ch.files?.length > 0 && (
                   <div className="flex items-center justify-between mt-1">
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-300">
                       {ch.files.length} file dipilih
                     </p>
                     <button
                       type="button"
                       onClick={() => openPreview(index)}
-                      className="text-sm text-blue-600 hover:underline"
+                      className="text-sm text-blue-300 hover:underline"
                     >
                       Preview
                     </button>
@@ -466,7 +474,7 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
             <button
               type="button"
               onClick={addChapter}
-              className="text-sm text-blue-600 hover:underline"
+              className="text-sm text-blue-400 hover:underline"
             >
               + Tambah Chapter
             </button>

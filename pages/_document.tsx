@@ -4,12 +4,15 @@ import Footer from "@/components/Footer";
 export default function Document() {
   return (
     <Html lang="en">
-      <title>Komify</title>
-      <Head />
-      <body className="antialiased">
+      <Head>
+        {/* Meta utama (title tidak boleh di sini) */}
+        <meta name="theme-color" content="#111827" />
+      </Head>
+
+      <body className="antialiased bg-gradient-to-b from-gray-900 to-gray-800 text-white">
         <Main />
-        <NextScript />
         <Footer />
+        <NextScript />
       </body>
     </Html>
   );
