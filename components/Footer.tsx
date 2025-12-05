@@ -4,7 +4,7 @@ import ThemeToggle from "./ThemeToggle";
 export default function Footer() {
   return (
     <footer
-      className="w-full py-6 mt-8 border-t 
+      className="w-full py-6 border-t 
       bg-white text-black dark:bg-gray-900 dark:text-white
       border-gray-300 dark:border-gray-700 transition-colors"
     >

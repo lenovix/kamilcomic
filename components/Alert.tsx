@@ -56,6 +56,7 @@ export default function Alert({
 
   return (
     <div
+      onClick={onClose}
       className={`
         fixed bottom-6 right-6
         w-[90%] max-w-md
@@ -73,17 +74,6 @@ export default function Alert({
           <h4 className={`font-bold text-lg ${style.title}`}>{title}</h4>
           {desc && <p className="text-sm text-gray-700">{desc}</p>}
         </div>
-
-        {/* sembunyikan tombol close saat upload */}
-        {type !== "onprogress" && (
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-800 transition"
-            aria-label="Close alert"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        )}
       </div>
 
       {/* Progress bar */}

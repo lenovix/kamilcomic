@@ -182,7 +182,7 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
   };
 
   const handleUpload = async () => {
-    setDialogOpen(false); // tutup dialog
+    setDialogOpen(false);
 
     const formData = new FormData();
     Object.entries(comicData).forEach(([key, value]) => {
@@ -321,7 +321,6 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* DETAIL (kiri) */}
             <div className="bg-white/5 border border-white/10 rounded-xl p-4 shadow-sm backdrop-blur-sm space-y-4">
-              <h2 className="font-semibold text-gray-200">📑 Detail</h2>
               <div className="grid gap-4">
                 {[
                   { name: "title", placeholder: "Title" },
@@ -358,7 +357,7 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
 
               {/* BOX COVER */}
               <div
-                className="w-full aspect-[2/3] border-2 border-gray-300 rounded-xl bg-gray-50 flex items-center justify-center cursor-pointer hover:bg-gray-100 transition relative"
+                className="w-full h-[390] border-2 border-gray-300 rounded-xl bg-gray-50 flex items-center justify-center cursor-pointer hover:bg-gray-100 transition relative"
                 onClick={() => setCoverDialogOpen(true)}
               >
                 {comicData.cover ? (
@@ -392,46 +391,87 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
           {/* CHAPTER SECTION (BOTTOM)   */}
           {/* ========================== */}
           <div className="bg-white/5 border border-white/10 rounded-xl p-4 shadow-sm backdrop-blur-sm space-y-4">
-            <h2 className="text-lg font-semibold text-gray-200">📄 Chapters</h2>
+            {/* Header: Title + Add Button */}
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-200">
+                📄 Chapters
+              </h2>
+
+              <button
+                type="button"
+                onClick={addChapter}
+                className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded"
+              >
+                + Add
+              </button>
+            </div>
 
             {chapters.map((ch, index) => (
               <div
                 key={index}
-                className="border border-gray-300 rounded-lg p-3 relative bg-white/10"
+                className="border border-gray-300 rounded-lg p-3 bg-white/10 relative"
               >
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-2 mb-2">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
+                  {/* Chapter Number */}
                   <input
                     name="number"
-                    placeholder="No"
+                    placeholder="Ch. #"
                     value={ch.number}
                     onChange={(e) => handleChapterChange(index, e)}
-                    className="border p-2 rounded w-full bg-white/20 text-white placeholder-gray-300"
+                    className="border p-2 rounded bg-white/20 text-white placeholder-gray-300"
                   />
+
+                  {/* Title */}
                   <input
                     name="title"
                     placeholder="Title"
                     value={ch.title}
                     onChange={(e) => handleChapterChange(index, e)}
-                    className="border p-2 rounded w-full bg-white/20 text-white placeholder-gray-300"
+                    className="border p-2 rounded bg-white/20 text-white placeholder-gray-300"
                   />
-                  <input
-                    name="language"
-                    placeholder="Language"
-                    value={ch.language}
-                    onChange={(e) => handleChapterChange(index, e)}
-                    className="border p-2 rounded w-full bg-white/20 text-white placeholder-gray-300"
-                  />
+
+                  {/* Language (Combobox: Dropdown + Free Input) */}
+                  <div className="relative">
+                    <input
+                      name="language"
+                      list="chapter-languages"
+                      placeholder="Language"
+                      value={ch.language}
+                      onChange={(e) => handleChapterChange(index, e)}
+                      className="border p-2 rounded w-full bg-white/20 text-white placeholder-gray-300"
+                    />
+                    <datalist id="chapter-languages">
+                      <option value="English" />
+                      <option value="Indonesian" />
+                      <option value="Japanese" />
+                      <option value="Korean" />
+                    </datalist>
+                  </div>
+
+                  {/* Upload File */}
                   <input
                     type="file"
                     multiple
                     accept=".zip,.rar,image/*"
                     onChange={(e) => handleChapterFile(index, e.target.files)}
-                    className="border p-2 rounded w-full bg-white/20 text-white"
+                    className="border p-2 rounded bg-white/20 text-white"
                   />
+
+                  {/* Delete Button */}
+                  {index > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => removeChapter(index)}
+                      className="p-2 bg-red-600 hover:bg-red-700 text-white rounded"
+                    >
+                      ✕
+                    </button>
+                  )}
                 </div>
 
+                {/* Preview Files */}
                 {ch.files?.length > 0 && (
-                  <div className="flex items-center justify-between mt-1">
+                  <div className="flex items-center justify-between mt-2">
                     <p className="text-sm text-gray-300">
                       {ch.files.length} file dipilih
                     </p>
@@ -444,40 +484,8 @@ export default function UploadComicPage({ defaultSlug }: UploadComicPageProps) {
                     </button>
                   </div>
                 )}
-
-                {index > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => removeChapter(index)}
-                    className="absolute top-2 right-2 p-1 rounded hover:bg-red-100 text-red-600"
-                    title="Hapus Chapter"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                )}
               </div>
             ))}
-
-            <button
-              type="button"
-              onClick={addChapter}
-              className="text-sm text-blue-400 hover:underline"
-            >
-              + Tambah Chapter
-            </button>
           </div>
         </form>
       </main>
